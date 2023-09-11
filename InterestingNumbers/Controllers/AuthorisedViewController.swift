@@ -48,6 +48,7 @@ class AuthorisedViewController: UIViewController {
     
     @objc func forgotPassword() {
         print("forget pass")
+        print(navigationController?.viewControllers.count ?? 100, "Count nav")
         //TODO: - Forgot password
     }
     
@@ -57,6 +58,7 @@ class AuthorisedViewController: UIViewController {
         } else {
             print("register")
         }
+        navigationController?.pushViewController(ChoiseNumbersViewController(), animated: true)
     }
     
     private func addTargetForButtons() {

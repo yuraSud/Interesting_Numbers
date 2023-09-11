@@ -21,7 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		20D372302AAC63450095041A /* InterestingNumbers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InterestingNumbers.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		20D372302AAC63450095041A /* Interesting_Numbers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Interesting_Numbers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20D372332AAC63450095041A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		20D372352AAC63450095041A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		20D372372AAC63450095041A /* AuthorisedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorisedViewController.swift; sourceTree = "<group>"; };
@@ -58,7 +58,7 @@
 		20D372312AAC63450095041A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				20D372302AAC63450095041A /* InterestingNumbers.app */,
+				20D372302AAC63450095041A /* Interesting_Numbers.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,9 +133,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		20D3722F2AAC63450095041A /* InterestingNumbers */ = {
+		20D3722F2AAC63450095041A /* Interesting_Numbers */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 20D372442AAC63480095041A /* Build configuration list for PBXNativeTarget "InterestingNumbers" */;
+			buildConfigurationList = 20D372442AAC63480095041A /* Build configuration list for PBXNativeTarget "Interesting_Numbers" */;
 			buildPhases = (
 				20D3722C2AAC63450095041A /* Sources */,
 				20D3722D2AAC63450095041A /* Frameworks */,
@@ -145,9 +145,9 @@
 			);
 			dependencies = (
 			);
-			name = InterestingNumbers;
+			name = Interesting_Numbers;
 			productName = InterestingNumbers;
-			productReference = 20D372302AAC63450095041A /* InterestingNumbers.app */;
+			productReference = 20D372302AAC63450095041A /* Interesting_Numbers.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -165,7 +165,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 20D3722B2AAC63450095041A /* Build configuration list for PBXProject "InterestingNumbers" */;
+			buildConfigurationList = 20D3722B2AAC63450095041A /* Build configuration list for PBXProject "Interesting_Numbers" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -178,7 +178,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				20D3722F2AAC63450095041A /* InterestingNumbers */,
+				20D3722F2AAC63450095041A /* Interesting_Numbers */,
 			);
 		};
 /* End PBXProject section */
@@ -395,7 +395,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		20D3722B2AAC63450095041A /* Build configuration list for PBXProject "InterestingNumbers" */ = {
+		20D3722B2AAC63450095041A /* Build configuration list for PBXProject "Interesting_Numbers" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				20D372422AAC63480095041A /* Debug */,
@@ -404,7 +404,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		20D372442AAC63480095041A /* Build configuration list for PBXNativeTarget "InterestingNumbers" */ = {
+		20D372442AAC63480095041A /* Build configuration list for PBXNativeTarget "Interesting_Numbers" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				20D372452AAC63480095041A /* Debug */,
