@@ -10,19 +10,19 @@ import UIKit
 class AuthorisedViewController: UIViewController {
     
     let authoriseView = AuthorisedView()
+    let scrollView = UIScrollView()
     var isHaveAccount = false
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         addTargetForButtons()
         haveAccount(isHaveAccount)
+        setConstraints()
    }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        setConstraints()
     }
     
     private func setupView() {
@@ -30,11 +30,14 @@ class AuthorisedViewController: UIViewController {
         backgroundView.frame = view.bounds
         backgroundView.contentMode = .scaleAspectFill
         backgroundView.image = ImageConstants.backgroundAuthorized
-        
+
         authoriseView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.backgroundColor = .systemBackground
         view.addSubview(backgroundView)
-        view.addSubview(authoriseView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(authoriseView)
     }
     
 //MARK: - @objc Function:
@@ -58,7 +61,7 @@ class AuthorisedViewController: UIViewController {
         } else {
             print("register")
         }
-        navigationController?.pushViewController(ChoiseNumbersViewController(), animated: true)
+        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
     }
     
     private func addTargetForButtons() {
@@ -81,12 +84,18 @@ class AuthorisedViewController: UIViewController {
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            authoriseView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            authoriseView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            authoriseView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            authoriseView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
-
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            
+            authoriseView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            authoriseView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            authoriseView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            authoriseView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            
+            authoriseView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            authoriseView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
     }
 }
-

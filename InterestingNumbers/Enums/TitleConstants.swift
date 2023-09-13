@@ -21,9 +21,9 @@ enum TitleConstants {
     //AythorizedVC
     static let titleLabel = "Interesting Numbers"
     static let descriptionLabel = "This app about fucts of Numbers \n and Dates"
-    static let name = " enter your name"
-    static let email = " enter your email"
-    static let password = " enter your password"
+    static let name = " Enter your name"
+    static let email = " Enter your email"
+    static let password = " Enter your password"
     static let forgetButton = "Forgot Password?"
     static let registerButton = "Register"
     

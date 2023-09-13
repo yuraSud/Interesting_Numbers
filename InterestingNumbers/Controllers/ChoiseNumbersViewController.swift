@@ -35,12 +35,14 @@ class ChoiseNumbersViewController: UIViewController {
     }
     
     @objc func logOut() {
+        
         let alertController = UIAlertController(title: "Do you want Log out?", message: nil, preferredStyle: .actionSheet)
+        
         let actionLogOut = UIAlertAction(title: "Log Out", style: .default) { _ in
             //log out
             self.navigationController?.setViewControllers([EnterViewController()], animated: true)
-           // self.navigationController?.popToRootViewController(animated: true)
         }
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alertController.addAction(actionLogOut)
         alertController.addAction(cancelAction)
