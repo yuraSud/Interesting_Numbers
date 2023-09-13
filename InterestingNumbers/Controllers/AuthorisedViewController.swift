@@ -5,7 +5,12 @@
 //  Created by Olga Sabadina on 09.09.2023.
 //
 
+import FirebaseFirestoreSwift
 import UIKit
+import Firebase
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseAuth
 
 class AuthorisedViewController: UIViewController {
     
@@ -52,16 +57,71 @@ class AuthorisedViewController: UIViewController {
     @objc func forgotPassword() {
         print("forget pass")
         print(navigationController?.viewControllers.count ?? 100, "Count nav")
+        
+        let alert = UIAlertController(title: "Forgot Password", message: "you can reset your password", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "enter amail"
+        }
+        let alertActionOk = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let email = alert.textFields?.first?.text else {return}
+            Auth.auth().sendPasswordReset(withEmail: email) { error in
+                guard let error else {return}
+                print(error.localizedDescription)
+            }
+        }
+        alert.addAction(alertActionOk)
+        present(alert, animated: true)
         //TODO: - Forgot password
     }
     
     @objc func logIn(_ sender: UIButton) {
+        
+        guard let email = authoriseView.emailTextField.text,
+              let password = authoriseView.passwordTextField.text
+        else {return}
+        let man = Profile(name: authoriseView.nameTextField.text ?? "", email: email, age: 55)
+        var uid = ""
         if sender.tag == 0 {
-            print("log in")
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let err = error {
+                    print(err.localizedDescription)
+                    return
+                } else {
+                    switch result {
+                    case .none:
+                        print("none")
+                    case .some(let data):
+                        print(data.user.email ?? "doesn't receive user")
+                        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+                    }
+                }
+            }
         } else {
+           
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                if let err = error {
+                    print(err.localizedDescription)
+                    return
+                } else {
+                    uid = result?.user.uid ?? "yura"
+                    do {
+                        try Firestore.firestore().collection("users").document(uid).setData(from: man)
+                    } catch {
+                        print("Error send data")
+                    }
+                }
+                self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+            }
+//                try await Firestore.firestore().collection("users").document("oll")
+//                    .setData([
+//                        "name": authoriseView.nameTextField.text ?? "",
+//                        "email": email,
+//                        "age": 34
+//                             ])
             print("register")
         }
-        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+       // self.navigationController?.pushViewController(ChoiseNumbersViewController(), animated: true)
+//        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
     }
     
     private func addTargetForButtons() {
