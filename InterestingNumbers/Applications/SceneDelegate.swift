@@ -8,17 +8,20 @@
 import UIKit
 import FirebaseCore
 import FirebaseFirestore
-import FirebaseAuth
+import Combine
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var cancellable = Set<AnyCancellable>()
+    var authorizedService: AuthorizationService?
+    var navigationVC: UINavigationController?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let startVC = ChoiseNumbersViewController()
-        let navigationVC = UINavigationController(rootViewController: startVC)
         FirebaseApp.configure()
+        authorizedService = AuthorizationService.shared
         
+        navigationVC = UINavigationController()
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
@@ -34,8 +37,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        print("enable listener")
+        authorizedService?.$sessionState.sink(receiveValue: { state in
+            switch state {
+            case .loggedIn:
+                self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+            case .loggedOut:
+                self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
+            }
+        }).store(in: &cancellable)
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -49,9 +59,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        authorizedService?.removeHandleListener()
+        print("remove listener")
     }
 
 

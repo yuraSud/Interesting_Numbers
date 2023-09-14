@@ -1,0 +1,15 @@
+//
+//  AuthorizeError.swift
+//  Interesting_Numbers
+//
+//  Created by Yura Sabadin on 14.09.2023.
+//
+
+import Foundation
+
+enum AuthorizeError: String, Error {
+    case uid = "Your UID is empty, Can't receive..."
+    case errorParceProfile = "Can't parce data to Profile struct"
+    case docNotExists = "Sorry. \nThis document not exists"
+    case sendDataFailed = "Sorry, can't send data profile to server FireStore"
+}

@@ -27,4 +27,6 @@ enum TitleConstants {
     static let forgetButton = "Forgot Password?"
     static let registerButton = "Register"
     
+    //AuthorizedManager
+    static let nameCollection = "users"
 }

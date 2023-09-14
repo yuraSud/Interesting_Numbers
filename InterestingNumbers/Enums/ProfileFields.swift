@@ -7,14 +7,14 @@
 
 import Foundation
 
-enum ProfileEnum: String {
+enum ProfileFields: String {
     case name
     case email
     case age
-    case sex
+    case gender
 }
 
-enum Sex: String, Codable {
+enum Gender: String, Codable {
     case male
     case female
 }

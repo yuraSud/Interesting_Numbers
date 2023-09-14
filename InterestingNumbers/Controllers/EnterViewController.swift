@@ -15,6 +15,7 @@ class EnterViewController: UIViewController {
     let tryGuestButton = UIButton(type: .system)
     var authButtonsStack = UIStackView()
     var signUpStack = UIStackView()
+    let authService = AuthorizationService.shared
     
 // MARK: - life cycle
     
@@ -39,9 +40,15 @@ class EnterViewController: UIViewController {
         } else {
             authorizedVC.isHaveAccount = false
         }
-        
         navigationController?.navigationBar.isHidden = true
         navigationController?.pushViewController(authorizedVC, animated: true)
+    }
+    
+    @objc func goToAnonymous() {
+        authService.loginAnonymously { err in
+            guard let err = err else {return}
+            self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+        }
     }
     
 //MARK: - private func
@@ -78,7 +85,7 @@ class EnterViewController: UIViewController {
         tryGuestButton.setTitle(TitleConstants.tryGuestButton, for: .normal)
         tryGuestButton.backgroundColor = .systemBackground
         tryGuestButton.tintColor = .black
-//        tryGuestButton.addTarget(self, action: #selector(<#T##@objc method#>), for: .touchUpInside)
+        tryGuestButton.addTarget(self, action: #selector(goToAnonymous), for: .touchUpInside)
     }
     
     private func setLabels() {

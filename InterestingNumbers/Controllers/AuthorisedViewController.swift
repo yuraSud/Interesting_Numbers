@@ -2,7 +2,7 @@
 //  AythorizedViewController.swift
 //  InterestingNumbers
 //
-//  Created by Olga Sabadina on 09.09.2023.
+//  Created by Yura Sabadin on 09.09.2023.
 //
 
 import FirebaseFirestoreSwift
@@ -16,8 +16,11 @@ class AuthorisedViewController: UIViewController {
     
     let authoriseView = AuthorisedView()
     let scrollView = UIScrollView()
+    let authService = AuthorizationService.shared
     var isHaveAccount = false
 
+//MARK: - Life cycle:
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -29,6 +32,70 @@ class AuthorisedViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
     }
+    
+//MARK: - @objc Functions:
+    
+    @objc func goToSignIn() {
+        if isHaveAccount {
+            isHaveAccount = false
+            haveAccount(false)
+            authoriseView.layoutSubviews()
+        } else {
+            guard let enterVC = navigationController?.viewControllers.first(where: {$0.isKind(of: EnterViewController.self) }) as? EnterViewController else {
+                navigationController?.popToViewController(EnterViewController(), animated: true)
+                return
+            }
+            navigationController?.popToViewController(enterVC, animated: true)
+        }
+    }
+    
+    @objc func forgotPassword() {
+        print(navigationController?.viewControllers.count ?? 100, "Count nav") //Delete this row!!!
+        let alert = UIAlertController(title: "Do you want to reset password?", message: "use your email...", preferredStyle: .alert)
+        
+        let alertActionOk = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let email = alert.textFields?.first?.text else {return}
+            self.authService.resetPasswordByEmail(email: email) { error in
+                guard let error else {return}
+                self.presentAlert(with: "Error", message: "\(error.localizedDescription)", buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+        }
+        alert.addAction(alertActionOk)
+        alert.addTextField { textField in
+            textField.placeholder = "enter your email"
+        }
+        present(alert, animated: true)
+    }
+    
+    @objc func pushLogInButton(_ sender: UIButton) {
+       
+        //TODO: - ViewModel:....!!!!
+        
+        guard let email = authoriseView.emailTextField.text,
+              let password = authoriseView.passwordTextField.text
+        else {return}
+        let man = UserProfile(name: authoriseView.nameTextField.text ?? "Bot", email: email)
+        authService.userProfile = man
+        
+        if sender.tag == 0 {
+            
+            authService.logIn(email: email, pasword: password) { error in
+                
+                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+            
+        } else {
+            
+            self.authService.signUp(email, password, profile: man) { error in
+                guard let error = error else {return}
+                
+                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+            print("register")
+        }
+    }
+    
+//MARK: - Functions:
     
     private func setupView() {
         let backgroundView = UIImageView()
@@ -45,99 +112,14 @@ class AuthorisedViewController: UIViewController {
         scrollView.addSubview(authoriseView)
     }
     
-//MARK: - @objc Function:
-    @objc func goToSignIn() {
-        guard let enterVC = navigationController?.viewControllers.first(where: {$0.isKind(of: EnterViewController.self) }) as? EnterViewController else {
-            print("Nothin EnterVC in NavStack")
-            return
-        }
-        navigationController?.popToViewController(enterVC, animated: true)
-    }
-    
-    @objc func forgotPassword() {
-        print("forget pass")
-        print(navigationController?.viewControllers.count ?? 100, "Count nav")
-        
-        let alert = UIAlertController(title: "Forgot Password", message: "you can reset your password", preferredStyle: .alert)
-        alert.addTextField { textField in
-            textField.placeholder = "enter amail"
-        }
-        let alertActionOk = UIAlertAction(title: "OK", style: .default) { _ in
-            guard let email = alert.textFields?.first?.text else {return}
-            Auth.auth().sendPasswordReset(withEmail: email) { error in
-                guard let error else {return}
-                print(error.localizedDescription)
-            }
-        }
-        alert.addAction(alertActionOk)
-        present(alert, animated: true)
-        //TODO: - Forgot password
-    }
-    
-    @objc func logIn(_ sender: UIButton) {
-        
-        guard let email = authoriseView.emailTextField.text,
-              let password = authoriseView.passwordTextField.text
-        else {return}
-        let man = Profile(name: authoriseView.nameTextField.text ?? "", email: email, age: 55)
-        var uid = ""
-        if sender.tag == 0 {
-            Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                if let err = error {
-                    print(err.localizedDescription)
-                    return
-                } else {
-                    switch result {
-                    case .none:
-                        print("none")
-                    case .some(let data):
-                        print(data.user.email ?? "doesn't receive user")
-                        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-                    }
-                }
-            }
-        } else {
-           
-            Auth.auth().createUser(withEmail: email, password: password) { result, error in
-                if let err = error {
-                    print(err.localizedDescription)
-                    return
-                } else {
-                    uid = result?.user.uid ?? "yura"
-                    do {
-                        try Firestore.firestore().collection("users").document(uid).setData(from: man)
-                    } catch {
-                        print("Error send data")
-                    }
-                }
-                self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-            }
-//                try await Firestore.firestore().collection("users").document("oll")
-//                    .setData([
-//                        "name": authoriseView.nameTextField.text ?? "",
-//                        "email": email,
-//                        "age": 34
-//                             ])
-            print("register")
-        }
-       // self.navigationController?.pushViewController(ChoiseNumbersViewController(), animated: true)
-//        self.navigationController?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-    }
-    
     private func addTargetForButtons() {
         authoriseView.signInButton.addTarget(self, action: #selector(goToSignIn), for: .touchUpInside)
         authoriseView.forgetButton.addTarget(self, action: #selector(forgotPassword), for: .touchUpInside)
-        authoriseView.loginButton.addTarget(self, action: #selector(logIn(_:)), for: .touchUpInside)
+        authoriseView.loginButton.addTarget(self, action: #selector(pushLogInButton(_:)), for: .touchUpInside)
     }
     
     private func haveAccount(_ isHaveAccount: Bool) {
-        if isHaveAccount {
-            authoriseView.nameTextField.isHidden = true
-            authoriseView.setFogetPasswordButton()
-            authoriseView.setLoginButton(isHaveAccount)
-        } else {
-            authoriseView.setLoginButton(isHaveAccount)
-        }
+        authoriseView.isHaveAccount = isHaveAccount
     }
     
 //MARK: - constraints:
