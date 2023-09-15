@@ -41,32 +41,22 @@ class ChoiseNumbersViewController: UIViewController {
     }
     
 //MARK: - @objc Functions:
-    @objc func logOut() {
+    @objc func profileDetails() {
         
-        let alertController = UIAlertController(title: "Do you want Log out?", message: nil, preferredStyle: .actionSheet)
-        
-        let actionLogOut = UIAlertAction(title: "Log Out", style: .default) { _ in
-            //log out
-            self.authService.logOut()
-            
+        let profileVC = ProfileViewController()
+        if let user = user {
+            profileVC.setLabelsText(user: user)
+        } else {
+            let user = UserProfile(name: "?", email: "Anonymous@mail.com")
+            profileVC.setLabelsText(user: user)
         }
-        
-        let deleteUser = UIAlertAction(title: "Delete Account", style: .default) { _ in
-            self.authService.deleteUser { error in
-                
-                guard let error else {return}
-                
-                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
-            }
-                print("finish Delete account")
+        if let sheet = profileVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 25
         }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        alertController.addAction(actionLogOut)
-        alertController.addAction(deleteUser)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true)
+        navigationController?.present(profileVC, animated: true)
     }
         
 //MARK: - Functions:
@@ -91,7 +81,7 @@ class ChoiseNumbersViewController: UIViewController {
         userButton.titleLabel?.tintColor = .white
         userButton.layer.cornerRadius = userButton.bounds.size.width / 2
         userButton.backgroundColor = .systemMint
-        userButton.addTarget(self, action: #selector(logOut), for: .touchUpInside)
+        userButton.addTarget(self, action: #selector(profileDetails), for: .touchUpInside)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: userButton)
     }
     

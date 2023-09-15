@@ -72,13 +72,13 @@ class AuthorizationService {
     func signUp(_ email: String, _ pasword: String, profile: UserProfile?, errorHandler: ((Error?)->Void)?) {
         guard let profile = profile else {return}
        
-        Auth.auth().createUser(withEmail: email, password: pasword) { result, error in
+        Auth.auth().createUser(withEmail: email, password: pasword) { [weak self] result, error in
             switch result {
             case .none:
                 print("None in signUp in Manager")
             case .some(let result):
-                self.uid = result.user.uid
-                self.sendProfileToServer(profile: profile) { error in
+                self?.uid = result.user.uid
+                self?.sendProfileToServer(profile: profile) { error in
                     guard let error = error else {return}
                     errorHandler?(error)
                 }
@@ -104,22 +104,16 @@ class AuthorizationService {
             if let err = error {
                 errorHandler?(err)
             }
-            switch result {
-            case .none:
-                print("Password failed")
-            case .some(let res):
-                print(res.user.email ?? "email")
-            }
         }
     }
     
     func loginAnonymously(errorHandler: ((Error?)->Void)?) {
-        Auth.auth().signInAnonymously { result, error in
+        Auth.auth().signInAnonymously { [weak self] result, error in
             if let error = error {
                 errorHandler?(error)
             } else {
                 guard let uid = result?.user.uid else {return}
-                self.uid = uid
+                self?.uid = uid
             }
         }
     }

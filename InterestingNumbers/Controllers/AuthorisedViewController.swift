@@ -39,7 +39,6 @@ class AuthorisedViewController: UIViewController {
         if isHaveAccount {
             isHaveAccount = false
             haveAccount(false)
-            authoriseView.layoutSubviews()
         } else {
             guard let enterVC = navigationController?.viewControllers.first(where: {$0.isKind(of: EnterViewController.self) }) as? EnterViewController else {
                 navigationController?.popToViewController(EnterViewController(), animated: true)
@@ -78,18 +77,18 @@ class AuthorisedViewController: UIViewController {
         authService.userProfile = man
         
         if sender.tag == 0 {
-            
-            authService.logIn(email: email, pasword: password) { error in
-                
-                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            authoriseView.animating.startAnimating()
+            authService.logIn(email: email, pasword: password) { [weak self] error in
+                self?.authoriseView.animating.stopAnimating()
+                self?.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
             
         } else {
-            
-            self.authService.signUp(email, password, profile: man) { error in
+            authoriseView.animating.startAnimating()
+            self.authService.signUp(email, password, profile: man) { [weak self] error in
                 guard let error = error else {return}
-                
-                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                self?.authoriseView.animating.stopAnimating()
+                self?.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
             print("register")
         }
