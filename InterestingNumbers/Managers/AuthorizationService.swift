@@ -150,4 +150,18 @@ class AuthorizationService {
             errorHandler?(error)
         })
     }
+    
+    ///Check your email - Is already exists.
+    func checkEmailIsBusy(email: String, isBusyHandler: ((Bool)->())? = nil) {
+        Auth.auth().fetchSignInMethods(forEmail: email) { arrString, error in
+            if let error = error {
+                print(error.localizedDescription)
+                isBusyHandler?(false)
+            } else if let arrString = arrString {
+                isBusyHandler?(!arrString.isEmpty)
+            } else {
+                isBusyHandler?(false)
+            }
+        }
+    }
 }

@@ -5,12 +5,13 @@
 //  Created by Yura Sabadin on 09.09.2023.
 //
 
-import FirebaseFirestoreSwift
+//import FirebaseFirestoreSwift
 import UIKit
-import Firebase
-import FirebaseCore
-import FirebaseFirestore
-import FirebaseAuth
+//import Firebase
+//import FirebaseCore
+//import FirebaseFirestore
+//import FirebaseAuth
+import Combine
 
 class AuthorisedViewController: UIViewController {
     
@@ -18,6 +19,8 @@ class AuthorisedViewController: UIViewController {
     let scrollView = UIScrollView()
     let authService = AuthorizationService.shared
     var isHaveAccount = false
+    var viewModelAuthorized: AuthorizationViewModel?
+    var cancellable = Set<AnyCancellable>()
 
 //MARK: - Life cycle:
     
@@ -27,6 +30,8 @@ class AuthorisedViewController: UIViewController {
         addTargetForButtons()
         haveAccount(isHaveAccount)
         setConstraints()
+        setViewModel()
+        setTextFieldPublishers()
    }
     
     override func viewWillLayoutSubviews() {
@@ -59,7 +64,9 @@ class AuthorisedViewController: UIViewController {
                 self.presentAlert(with: "Error", message: "\(error.localizedDescription)", buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
         }
+        let alertActionCancel = UIAlertAction(title: "Cancel", style: .cancel)
         alert.addAction(alertActionOk)
+        alert.addAction(alertActionCancel)
         alert.addTextField { textField in
             textField.placeholder = "enter your email"
         }
@@ -119,6 +126,60 @@ class AuthorisedViewController: UIViewController {
     
     private func haveAccount(_ isHaveAccount: Bool) {
         authoriseView.isHaveAccount = isHaveAccount
+    }
+    
+    private func setViewModel() {
+        viewModelAuthorized = AuthorizationViewModel(authService: authService)
+        
+        viewModelAuthorized?.$isBusyEmail
+            .sink(receiveValue: { isBusy in
+                if self.isHaveAccount {
+                    self.authoriseView.emailTextField.emailIsExists(isExists: isBusy)
+                } else {
+                    self.authoriseView.emailTextField.emailAlreadyBusy(isBusy: isBusy)
+                }
+                self.authoriseView.emailTextField.animating?.stopAnimating()
+            })
+            .store(in: &cancellable)
+        
+        viewModelAuthorized?.registerIsEnable
+            .sink(receiveValue: { isRegister in
+                if !self.isHaveAccount {
+                    self.authoriseView.loginButton.isEnabled = isRegister
+                }
+            })
+            .store(in: &cancellable)
+        
+        viewModelAuthorized?.logInIsEnable
+            .sink(receiveValue: { isLogIn in
+                if self.isHaveAccount {
+                    self.authoriseView.loginButton.isEnabled = isLogIn
+                }
+            })
+            .store(in: &cancellable)
+        
+        viewModelAuthorized?.$email
+            .debounce(for: 0.8, scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .filter{!$0.isEmpty && $0.contains("@") && $0.contains(".")}
+            .sink { _ in
+                self.authoriseView.emailTextField.animating?.startAnimating()
+            }.store(in: &cancellable)
+    }
+    
+    private func setTextFieldPublishers() {
+        guard let viewModel = viewModelAuthorized else {return}
+        authoriseView.emailTextField.textPublisher
+            .assign(to: \.email, on: viewModel)
+            .store(in: &cancellable)
+        
+        authoriseView.nameTextField.textPublisher
+            .assign(to: \.name, on: viewModel)
+            .store(in: &cancellable)
+        
+        authoriseView.passwordTextField.textPublisher
+            .assign(to: \.password, on: viewModel)
+            .store(in: &cancellable)
     }
     
 //MARK: - constraints:

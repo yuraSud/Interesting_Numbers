@@ -12,9 +12,9 @@ class AuthorisedView: UIView {
     let titleLabel = UILabel()
     let signInLabel = UILabel()
     let descriptionLabel = UILabel()
-    let nameTextField = UITextField()
-    let emailTextField = UITextField()
-    let passwordTextField = UITextField()
+    let nameTextField = UITextFieldPadding()
+    let emailTextField = UITextFieldPadding()
+    let passwordTextField = UITextFieldPadding()
     let cubesView = UIImageView()
     var titlesStack = UIStackView()
     var authorizedStack = UIStackView()
@@ -23,6 +23,7 @@ class AuthorisedView: UIView {
     let signInButton = UIButton(type: .system)
     let forgetButton = UIButton(type: .system)
     let loginButton = UIButton(type: .system)
+    let buttonEye = UIButton()
     var isHaveAccount: Bool = false {
         didSet {
             setLoginButton()
@@ -36,12 +37,11 @@ class AuthorisedView: UIView {
         setCubesView()
         setTitlesLabel()
         setTitlesStack()
-        setAythorizedTextFields()
+        setAuthorisedTextFields()
         setSingInStack()
         setAuthorizedStack()
         configureLoginButton()
         registerKeyboard()
-        rightButtonInTextField()
         setConstraint()
     }
     
@@ -55,36 +55,7 @@ class AuthorisedView: UIView {
         print("deinit removeKeyboardObserver")
     }
     
-    //MARK: - open func:
-    
-    func setFogetPasswordButton() {
-        addSubview(forgetButton)
-        forgetButton.translatesAutoresizingMaskIntoConstraints = false
-        forgetButton.setTitle(TitleConstants.forgetButton, for: .normal)
-        forgetButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        NSLayoutConstraint.activate([
-            forgetButton.trailingAnchor.constraint(equalTo: authorizedStack.trailingAnchor),
-            forgetButton.topAnchor.constraint(equalTo: authorizedStack.bottomAnchor, constant: 10)
-        ])
-    }
-    
-    func setLoginButton() {
-        let titleLabelForButton = isHaveAccount ? TitleConstants.logInButton : TitleConstants.registerButton
-        loginButton.setTitle(titleLabelForButton, for: .normal)
-        loginButton.tag = isHaveAccount ? 0 : 1
-        
-        signInLabel.text = isHaveAccount ? TitleConstants.signUpLabel : TitleConstants.signInLabel
-        let buttonLabel = isHaveAccount ? TitleConstants.signUpButton : TitleConstants.singInButton
-        signInButton.setTitle(buttonLabel, for: .normal)
-        
-        if isHaveAccount {
-            nameTextField.isHidden = true
-            setFogetPasswordButton()
-        } else {
-            nameTextField.isHidden = false
-            forgetButton.isHidden = true
-        }
-    }
+    //MARK: - Func:
     
     //MARK: - @objc private func:
     
@@ -105,7 +76,7 @@ class AuthorisedView: UIView {
         frame.origin = CGPoint(x: frame.origin.x, y: 0)
     }
     
-    //MARK: - @objc private func:
+    //MARK: - private func:
     
     private func configureLoginButton() {
         addSubview(loginButton)
@@ -117,6 +88,35 @@ class AuthorisedView: UIView {
         animating.stopAnimating()
         animating.color = .white
         animating.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    private func setLoginButton() {
+        let titleLabelForButton = isHaveAccount ? TitleConstants.logInButton : TitleConstants.registerButton
+        loginButton.setTitle(titleLabelForButton, for: .normal)
+        loginButton.tag = isHaveAccount ? 0 : 1
+        
+        signInLabel.text = isHaveAccount ? TitleConstants.signUpLabel : TitleConstants.signInLabel
+        let buttonLabel = isHaveAccount ? TitleConstants.signUpButton : TitleConstants.singInButton
+        signInButton.setTitle(buttonLabel, for: .normal)
+        
+        if isHaveAccount {
+            nameTextField.isHidden = true
+            setFogetPasswordButton()
+        } else {
+            nameTextField.isHidden = false
+            forgetButton.isHidden = true
+        }
+    }
+    
+    private func setFogetPasswordButton() {
+        addSubview(forgetButton)
+        forgetButton.translatesAutoresizingMaskIntoConstraints = false
+        forgetButton.setTitle(TitleConstants.forgetButton, for: .normal)
+        forgetButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        NSLayoutConstraint.activate([
+            forgetButton.trailingAnchor.constraint(equalTo: authorizedStack.trailingAnchor),
+            forgetButton.topAnchor.constraint(equalTo: authorizedStack.bottomAnchor, constant: 10)
+        ])
     }
     
     private func setCubesView() {
@@ -139,39 +139,27 @@ class AuthorisedView: UIView {
         descriptionLabel.font = .systemFont(ofSize: 16)
     }
     
-    private func setAythorizedTextFields() {
+    private func setAuthorisedTextFields() {
         let textFields = [nameTextField, emailTextField, passwordTextField]
-        textFields.forEach { tf in
-            tf.font = .systemFont(ofSize: 18)
-            tf.autocapitalizationType = .none
-            tf.autocorrectionType = .no
-            tf.clearButtonMode = .whileEditing
+        let placeholderArray = [TitleConstants.name, TitleConstants.email, TitleConstants.password]
+
+        textFields.enumerated().forEach { index, tf in
             tf.delegate = self
-            tf.setBorderLayer(backgroundColor: .secondarySystemBackground, borderColor: .lightGray, borderWidth: 1, cornerRadius: 4, tintColor: nil)
+            tf.font = .systemFont(ofSize: 19)
             tf.heightAnchor.constraint(equalToConstant: 50).isActive = true
+            tf.ccnfigureCustomPlaceholder(text: placeholderArray[index],
+                                          frame: .init(x: 14, y: 5, width: 200, height: 40))
+            tf.setBorderLayer(backgroundColor: .secondarySystemBackground,
+                              borderColor: .lightGray,
+                              borderWidth: 1,
+                              cornerRadius: 9,
+                              tintColor: nil)
         }
-        nameTextField.placeholder = TitleConstants.name
-        emailTextField.placeholder = TitleConstants.email
-        passwordTextField.placeholder = TitleConstants.password
-        passwordTextField.isSecureTextEntry = true
+        nameTextField.addEmailImageAndClearButton()
+        passwordTextField.addSequreAndClearButtons()
+        emailTextField.addEmailImageAndClearButton()
+        emailTextField.setAnimating()
     }
-    
-    private func rightButtonInTextField() {
-        
-        let buttonEye = UIButton()
-        
-        buttonEye.setImage(UIImage(systemName: "eye.fill"), for: .normal)
-        //        buttonEye.setImage(UIImage(systemName: "eye.slash.fill"), for: .normal)
-        //        buttonEye.backgroundColor = .gray
-        buttonEye.frame = CGRect(x: -25, y: 5, width: 25, height: 25)
-        //        buttonEye.addTarget(self, action: #selector(), for: .touchUpInside)
-        let rightView = UIView(frame: CGRect(x: 0, y: 0, width: 110, height: 40))
-        rightView.backgroundColor = .orange
-        rightView.addSubview(buttonEye)
-        passwordTextField.rightViewMode = UITextField.ViewMode.always
-        passwordTextField.rightView = buttonEye
-    }
-    
     
     private func setTitlesStack() {
         titlesStack = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel])
@@ -244,8 +232,8 @@ class AuthorisedView: UIView {
             loginButton.heightAnchor.constraint(equalToConstant: 50),
             loginButton.topAnchor.constraint(equalTo: authorizedStack.bottomAnchor, constant: 55),
             
-            animating.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor, constant: -10),
-            animating.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor)
+            animating.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor, constant: -20),
+            animating.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor),
         ])
     }
 }
@@ -253,22 +241,45 @@ class AuthorisedView: UIView {
 //MARK: - TextField Delegate:
 
 extension AuthorisedView: UITextFieldDelegate {
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == nameTextField {
-            emailTextField.becomeFirstResponder()
-        }else {
-            if textField == emailTextField {
-                passwordTextField.becomeFirstResponder()
-            } else {
-                endEditing(true)
-            }
+
+    private func minimizePlaceholder(_ tf: UITextField) {
+        UIView.animate(withDuration: 0.3) {
+            guard let tf = tf as? UITextFieldPadding else {return}
+            tf.ccnfigureFrameCustomPlaceHolder(frame: .init(x: 14, y: 3, width: 200, height: 17))
         }
-        return true
     }
-    
+
+    private func expandLabel(_ tf: UITextField) {
+        UIView.animate(withDuration: 0.5) {
+            guard let tf = tf as? UITextFieldPadding else {return}
+            tf.ccnfigureFrameCustomPlaceHolder(frame: .init(x: 14, y: 5, width: 200, height: 40))
+        }
+    }
+
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        registerKeyboard()
+        if textField == nameTextField {
+            minimizePlaceholder(textField)
+        } else if textField == emailTextField {
+            minimizePlaceholder(textField)
+        } else {
+            minimizePlaceholder(textField)
+        }
+    }
+
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let text = textField.text, text.isEmpty else {return}
+        if textField == nameTextField {
+            expandLabel(textField)
+        } else if textField == emailTextField {
+            expandLabel(textField)
+        } else {
+            expandLabel(textField)
+        }
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        endEditing(true)
+        return true
     }
 }
 

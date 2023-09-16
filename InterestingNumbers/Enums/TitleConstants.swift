@@ -24,6 +24,7 @@ enum TitleConstants {
     static let name = " Enter your name"
     static let email = " Enter your email"
     static let password = " Enter your password"
+    static let emailBusy = "This email already exists"
     static let forgetButton = "Forgot Password?"
     static let registerButton = "Register"
     

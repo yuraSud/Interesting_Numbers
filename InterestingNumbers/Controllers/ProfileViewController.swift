@@ -121,6 +121,7 @@ class ProfileViewController: UIViewController {
     private func addTargetButton() {
         logOutProfileButton.addTarget(self, action: #selector(logOut), for: .touchUpInside)
         deletProfileButton.addTarget(self, action: #selector(deleteUser), for: .touchUpInside)
+       // editProfileButton.addTarget(self, action: #selector(fetch), for: .touchUpInside)
     }
     
     private func setConstraints() {
