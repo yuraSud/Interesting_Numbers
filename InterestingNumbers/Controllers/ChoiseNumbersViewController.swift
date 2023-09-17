@@ -42,14 +42,8 @@ class ChoiseNumbersViewController: UIViewController {
     
 //MARK: - @objc Functions:
     @objc func profileDetails() {
-        
         let profileVC = ProfileViewController()
-        if let user = user {
-            profileVC.setLabelsText(user: user)
-        } else {
-            let user = UserProfile(name: "?", email: "Anonymous@mail.com")
-            profileVC.setLabelsText(user: user)
-        }
+        
         if let sheet = profileVC.sheetPresentationController {
             sheet.detents = [.medium()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
@@ -91,9 +85,10 @@ class ChoiseNumbersViewController: UIViewController {
     }
     
     func updateLabels(_ isAnonymously: Bool) {
-        let title = isAnonymously ? "?" : user?.firstLetter
+        let title = isAnonymously ? "??" : user?.firstLetter
+        let navCount = navigationController?.viewControllers.count ?? 100
         userButton.setTitle(title, for: .normal)
-        nameLabel.text = isAnonymously ? "I am anonymously" : "\(user?.name ?? "not name") have email\n \(user?.email ?? "not email"), \nand\n uid = \(authService.uid)"
+        nameLabel.text = isAnonymously ? "I am anonymously" : "\(user?.name ?? "not name") have email\n \(user?.email ?? "not email"), \nand\n uid = \(authService.uid)\n count nav = \(navCount)"
     }
     
     func sinkForUpdateUsers() {

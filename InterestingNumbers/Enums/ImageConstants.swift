@@ -12,6 +12,9 @@ enum ImageConstants {
     static let bigDice = UIImage(named: "whiteDice")
     static let background = UIImage(named: "background")
     static let backgroundAuthorized = UIImage(named: "backgroundAuthorized")
+    static let googleIcon = UIImage(named: "google")
+    static let appleIcon = UIImage(named: "apple")
+    
     
     //Authorized View
     static let openEye = UIImage(systemName: "eye.fill")

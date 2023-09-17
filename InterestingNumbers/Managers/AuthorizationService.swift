@@ -12,6 +12,7 @@ import FirebaseFirestore
 import FirebaseFirestoreSwift
 import Combine
 import FirebaseAuth
+import GoogleSignIn
 
 
 class AuthorizationService {
@@ -98,6 +99,16 @@ class AuthorizationService {
         }
     }
     
+    func addCountRequest(countRequest: Int, errorHandler: ((Error?)->Void)?) {
+        let reference = Firestore.firestore().collection(TitleConstants.nameCollection).document(uid)
+        do {
+            userProfile?.countRequest = countRequest
+            try reference.setData(from: userProfile)
+        } catch {
+            errorHandler?(AuthorizeError.sendDataFailed)
+        }
+    }
+    
     func logIn(email: String, pasword: String, errorHandler: ((Error)->Void)?) {
         Auth.auth().signIn(withEmail: email, password: pasword) { result, error in
            
@@ -163,5 +174,65 @@ class AuthorizationService {
                 isBusyHandler?(false)
             }
         }
+    }
+    
+    func authenticationWithGoogle(vc: UIViewController, errorHandler: ((Error?)->Void)? = nil ) {
+        guard let clientID = FirebaseApp.app()?.options.clientID else {
+            errorHandler?(AuthorizeError.noFoundID)
+            return }
+        
+        // Create Google Sign In configuration object.
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        // Start the sign in flow!
+      //  do {
+            GIDSignIn.sharedInstance.signIn(withPresenting: vc) { result, error in
+                guard error == nil else {
+                    errorHandler?(error)
+                    return
+                }
+                guard let user = result?.user else {return}
+                guard let idToken = user.idToken?.tokenString else {
+                    errorHandler?( AuthorizeError.errorToken)
+                    return
+                }
+                let accessToken = user.accessToken.tokenString
+                let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                               accessToken: accessToken)
+                Auth.auth().signIn(with: credential) { result, error in
+                    guard error == nil else {
+                        errorHandler?(error)
+                        return
+                    }
+                    guard let user = result?.user else {return}
+                    self.uid = user.uid
+                    guard !user.isAnonymous else {return}
+                    self.fetchProfile() { error in
+                        guard let error = error else {return}
+                        self.error = error
+                    }
+                }
+                
+            }
+            
+           // let user = userAuthentication.user
+//            guard let idToken = user.idToken?.tokenString else {
+//                errorHandler?( AuthorizeError.errorToken)
+//                return
+//            }
+//            let accessToken = user.accessToken.tokenString
+//            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+//                                                           accessToken: accessToken)
+            //let result = try await Auth.auth().signIn(with: credential)
+//            self.uid = result.user.uid
+//            guard !result.user.isAnonymous else {return}
+//            self.fetchProfile() { error in
+//                guard let error = error else {return}
+//                self.error = error
+//            }
+//        } catch let error {
+//            errorHandler?(error)
+//        }
     }
 }

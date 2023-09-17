@@ -9,6 +9,7 @@ import UIKit
 import FirebaseCore
 import FirebaseFirestore
 import Combine
+import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,7 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         FirebaseApp.configure()
         authorizedService = AuthorizationService.shared
-        
         navigationVC = UINavigationController()
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -37,15 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        print("enable listener")
-        authorizedService?.$sessionState.sink(receiveValue: { state in
-            switch state {
-            case .loggedIn:
-                self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-            case .loggedOut:
-                self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
-            }
-        }).store(in: &cancellable)
+        
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -56,6 +48,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
+        print("enable listener")
+        authorizedService?.$sessionState
+            .sink(receiveValue: { state in
+                switch state {
+                case .loggedIn:
+                    print("nav enable")
+                    self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+                    
+                case .loggedOut:
+                    self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
+                }
+            }).store(in: &cancellable)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {

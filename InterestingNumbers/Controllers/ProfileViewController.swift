@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import Combine
 
 class ProfileViewController: UIViewController {
     
     let usersImageLabel = UILabel()
     let nameUserLabel = UILabel()
     let emailUserLabel = UILabel()
+    let countRequestLabel = UILabel()
     let editProfileButton = UIButton(type: .system)
     let deletProfileButton = UIButton(type: .system)
     let logOutProfileButton = UIButton(type: .system)
@@ -19,6 +21,8 @@ class ProfileViewController: UIViewController {
     var stackButtons = UIStackView()
     var labelStack = UIStackView()
     let authService = AuthorizationService.shared
+    var user: UserProfile?
+    var subscribers = Set<AnyCancellable>()
     
 //MARK: - Life cycle:
     
@@ -30,6 +34,8 @@ class ProfileViewController: UIViewController {
         setCloseButton()
         setConstraints()
         addTargetButton()
+        fetchCurrentUser()
+        updateUser()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -38,10 +44,33 @@ class ProfileViewController: UIViewController {
     
 //MARK: - Fuctions:
     
-    func setLabelsText(user: UserProfile) {
+    func updateUser() {
+        authService.$userProfile
+            .receive(on: DispatchQueue.main)
+            .filter{ $0 != nil }
+            .sink { profile in
+                self.user = profile
+                self.setLabelsText()
+            }.store(in: &subscribers)
+    }
+    
+    func fetchCurrentUser() {
+        authService.fetchProfile()
+        user = authService.userProfile
+        guard let _ = user else {
+            self.user = UserProfile(name: "?", email: "Anonymous@mail.com")
+            setLabelsText()
+            return
+        }
+        setLabelsText()
+    }
+    
+    func setLabelsText() {
+        guard let user else {return}
         nameUserLabel.text = "name: \(user.name)"
         emailUserLabel.text = "email: \(user.email)"
         usersImageLabel.text = user.firstLetter
+        countRequestLabel.text = "Count request: \(user.countRequest ?? 0)"
     }
     
 //MARK: - @objc Functions:
@@ -62,6 +91,13 @@ class ProfileViewController: UIViewController {
             self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
         closeVC()
+    }
+    
+    @objc func addCountRequest() {
+        authService.addCountRequest(countRequest: 64) { error in
+            guard let error else {return}
+            self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+        }
     }
     
 //MARK: - private Functions:
@@ -88,9 +124,9 @@ class ProfileViewController: UIViewController {
         emailUserLabel.textAlignment = .left
         emailUserLabel.adjustsFontSizeToFitWidth = true
         
-        let labelRightStack = UIStackView(arrangedSubviews: [nameUserLabel,emailUserLabel])
+        let labelRightStack = UIStackView(arrangedSubviews: [nameUserLabel,emailUserLabel,countRequestLabel])
         labelRightStack.axis = .vertical
-        labelRightStack.spacing = 8
+        labelRightStack.spacing = 5
         labelRightStack.distribution = .fillEqually
         
         labelStack = UIStackView(arrangedSubviews: [usersImageLabel,labelRightStack])
@@ -109,7 +145,7 @@ class ProfileViewController: UIViewController {
             button.setBorderLayer(backgroundColor: .link, borderColor: .gray, borderWidth: 2, cornerRadius: 20, tintColor: .white)
             button.titleLabel?.font = .boldSystemFont(ofSize: 18)
         }
-        editProfileButton.isEnabled = false
+        editProfileButton.isEnabled = true
         stackButtons = UIStackView(arrangedSubviews: buttons)
         stackButtons.axis = .vertical
         stackButtons.spacing = 18
@@ -121,7 +157,7 @@ class ProfileViewController: UIViewController {
     private func addTargetButton() {
         logOutProfileButton.addTarget(self, action: #selector(logOut), for: .touchUpInside)
         deletProfileButton.addTarget(self, action: #selector(deleteUser), for: .touchUpInside)
-       // editProfileButton.addTarget(self, action: #selector(fetch), for: .touchUpInside)
+        editProfileButton.addTarget(self, action: #selector(addCountRequest), for: .touchUpInside)
     }
     
     private func setConstraints() {

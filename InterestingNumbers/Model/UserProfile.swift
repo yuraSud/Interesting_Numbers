@@ -12,7 +12,7 @@ struct UserProfile: Codable {
     
     var name: String
     var email: String
-    var age: Int?
+    var countRequest: Int?
     var gender: Gender?
     
     var firstLetter: String {

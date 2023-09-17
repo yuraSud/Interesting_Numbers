@@ -12,4 +12,7 @@ enum AuthorizeError: String, Error {
     case errorParceProfile = "Can't parce data to Profile struct"
     case docNotExists = "Sorry. \nThis document not exists"
     case sendDataFailed = "Sorry, can't send data profile to server FireStore"
+    case noFoundID = "NO client ID found in FireBase configuration"
+    case notRootVC = "There is no root view controller "
+    case errorToken = "ID token missing"
 }

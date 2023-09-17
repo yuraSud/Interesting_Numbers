@@ -74,14 +74,12 @@ class AuthorisedViewController: UIViewController {
     }
     
     @objc func pushLogInButton(_ sender: UIButton) {
-       
-        //TODO: - ViewModel:....!!!!
-        
+
         guard let email = authoriseView.emailTextField.text,
               let password = authoriseView.passwordTextField.text
         else {return}
-        let man = UserProfile(name: authoriseView.nameTextField.text ?? "Bot", email: email)
-        authService.userProfile = man
+        let user = UserProfile(name: authoriseView.nameTextField.text?.returnFirstLetterUppercase ?? "Bot", email: email)
+       // authService.userProfile = man
         
         if sender.tag == 0 {
             authoriseView.animating.startAnimating()
@@ -92,12 +90,11 @@ class AuthorisedViewController: UIViewController {
             
         } else {
             authoriseView.animating.startAnimating()
-            self.authService.signUp(email, password, profile: man) { [weak self] error in
+            self.authService.signUp(email, password, profile: user) { [weak self] error in
                 guard let error = error else {return}
                 self?.authoriseView.animating.stopAnimating()
                 self?.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
-            print("register")
         }
     }
     
