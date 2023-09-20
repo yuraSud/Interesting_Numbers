@@ -7,6 +7,14 @@
 
 import UIKit
 import GoogleSignIn
+import AuthenticationServices
+import FirebaseAuth
+import CryptoKit
+
+import Foundation
+import Firebase
+import FirebaseFirestore
+
 
 class EnterViewController: UIViewController {
     
@@ -19,6 +27,8 @@ class EnterViewController: UIViewController {
     let authService = AuthorizationService.shared
     let googleButton = UIButton()
     let appleButton = UIButton()
+    
+    var currentNonce: String? //Apple authorization
     
 // MARK: - life cycle
     
@@ -60,13 +70,25 @@ class EnterViewController: UIViewController {
     }
     
     @objc func signUpWithGoogle() {
-        //Task {
         authService.authenticationWithGoogle(vc: self)
-    //}
     }
     
     @objc func signUpWithApple() {
-        print("apple")
+        authService.startSignInWithAppleFlow(vc: self) { result in
+            switch result {
+            case .success(let tokenResult):
+                Task {
+                    do {
+                        try await self.authService.signInWithApple(token: tokenResult)
+                        
+                    } catch let err {
+                        self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                    }
+                }
+            case .failure(let error):
+                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+        }
     }
     
 //MARK: - private func
@@ -156,6 +178,8 @@ class EnterViewController: UIViewController {
         view.addSubview(signUpStack)
     }
     
+    
+    
  //MARK: - Constraints
     
     private func setConstraints() {
@@ -189,3 +213,88 @@ class EnterViewController: UIViewController {
         ])
     }
 }
+
+//extension EnterViewController: ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
+//
+//    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+//        guard let window = self.view.window else {return ASPresentationAnchor()}
+//        return window
+//    }
+//
+//    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+//
+//        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+//              let nonce = currentNonce,
+//              let appleIDToken = appleIDCredential.identityToken,
+//              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+//            print("Error return token")
+//            return
+//        }
+//
+//        let credential = OAuthProvider.credential(withProviderID: "apple.com",
+//                                                          idToken: idTokenString,
+//                                                          rawNonce: nonce)
+//          // Sign in with Firebase.
+//            Auth.auth().signIn(with: credential) { result, error in
+//                guard error == nil else {
+//                    print("auth error")
+//                    return
+//                }
+//                guard let user = result?.user else {return}
+//                self.uid = user.uid
+//                guard !user.isAnonymous else {return}
+//                self.fetchProfile() { error in
+//                    guard let error = error else {return}
+//                    self.error = error
+//                }
+//            }
+//        }
+//
+//    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+//        // Handle error.
+//        print("Sign in with Apple errored: \(error)")
+//      }
+//
+//    private func randomNonceString(length: Int = 32) -> String {
+//      precondition(length > 0)
+//      var randomBytes = [UInt8](repeating: 0, count: length)
+//      let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+//      if errorCode != errSecSuccess {
+//        fatalError(
+//          "Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)"
+//        )
+//      }
+//      let charset: [Character] =
+//        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+//
+//      let nonce = randomBytes.map { byte in
+//        // Pick a random character from the set, wrapping around if needed.
+//        charset[Int(byte) % charset.count]
+//      }
+//      return String(nonce)
+//    }
+//
+//    private func sha256(_ input: String) -> String {
+//      let inputData = Data(input.utf8)
+//      let hashedData = SHA256.hash(data: inputData)
+//      let hashString = hashedData.compactMap {
+//        String(format: "%02x", $0)
+//      }.joined()
+//
+//      return hashString
+//    }
+//
+//    func startSignInWithAppleFlow(vc: UIViewController) {
+//        let nonce = randomNonceString()
+//        currentNonce = nonce
+//        let appleIDProvider = ASAuthorizationAppleIDProvider()
+//        let request = appleIDProvider.createRequest()
+//        request.requestedScopes = [.fullName, .email]
+//        request.nonce = sha256(nonce)
+//
+//        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+//        authorizationController.delegate = self
+//        authorizationController.presentationContextProvider = self
+//        authorizationController.performRequests()
+//    }
+//}

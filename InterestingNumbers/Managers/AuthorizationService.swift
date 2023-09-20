@@ -13,9 +13,11 @@ import FirebaseFirestoreSwift
 import Combine
 import FirebaseAuth
 import GoogleSignIn
+import AuthenticationServices
 
 
-class AuthorizationService {
+
+final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     @Published var userProfile: UserProfile?
     @Published var sessionState: SessionState = .loggedOut
@@ -26,12 +28,15 @@ class AuthorizationService {
         }
     }
     
+    var completionResultTokenApple: ((Result<SignInWithAppleResult, Error>)-> Void)?
+    var currentNonce: String? //Apple authorization
     var cancellables = Set<AnyCancellable>()
     private var handle: AuthStateDidChangeListenerHandle?
     
     static let shared = AuthorizationService()
     
-    private init() {
+    private override init() {
+        super.init()
         setupFirebaseAuth()
     }
     
@@ -42,7 +47,7 @@ class AuthorizationService {
             guard let user = user else {return}
             self.uid = user.uid
             guard !user.isAnonymous else {return}
-            self.fetchProfile() { error in
+            self.fetchProfile(uidDocument: self.uid) { error in
                 guard let error = error else {return}
                 self.error = error
             }
@@ -50,13 +55,9 @@ class AuthorizationService {
     }
     
     ///Fetch users profile document from server FireStore
-    func fetchProfile(errorHandler: ((Error?)->Void)? = nil) {
+    func fetchProfile(uidDocument: String, errorHandler: ((Error?)->Void)? = nil) {
        
-        guard !uid.isEmpty else {
-            errorHandler?(AuthorizeError.uid)
-            return}
-        
-        Firestore.firestore().collection(TitleConstants.nameCollection).document(uid).getDocument { [weak self] document, error in
+        Firestore.firestore().collection(TitleConstants.nameCollection).document(uidDocument).getDocument { [weak self] document, error in
             if let document = document, document.exists {
                 do {
                     self?.userProfile = try document.data(as: UserProfile.self)
@@ -93,17 +94,17 @@ class AuthorizationService {
     func sendProfileToServer(profile: UserProfile,errorHandler: ((Error?)->Void)?) {
         let reference = Firestore.firestore().collection(TitleConstants.nameCollection).document(uid)
         do {
-            try reference.setData(from: profile)
+            try reference.setData(from: profile, merge: true)
         } catch {
             errorHandler?(AuthorizeError.sendDataFailed)
         }
     }
-    
+    //TODO: - переделать посылку запросов
     func addCountRequest(countRequest: Int, errorHandler: ((Error?)->Void)?) {
         let reference = Firestore.firestore().collection(TitleConstants.nameCollection).document(uid)
         do {
             userProfile?.countRequest = countRequest
-            try reference.setData(from: userProfile)
+            try reference.setData(from: userProfile, merge: true)
         } catch {
             errorHandler?(AuthorizeError.sendDataFailed)
         }
@@ -131,11 +132,14 @@ class AuthorizationService {
     
     func userIsAnonymously() -> Bool {
         guard let user = Auth.auth().currentUser else {return false}
-            return user.isAnonymous
+        fetchProfile(uidDocument: user.uid)
+        return user.isAnonymous
     }
     
     func logOut() {
         try? Auth.auth().signOut()
+        self.uid = ""
+        self.userProfile = nil
     }
     
     func removeHandleListener() {
@@ -176,63 +180,125 @@ class AuthorizationService {
         }
     }
     
+//MARK: - Google Sign up
+    
     func authenticationWithGoogle(vc: UIViewController, errorHandler: ((Error?)->Void)? = nil ) {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
             errorHandler?(AuthorizeError.noFoundID)
             return }
         
-        // Create Google Sign In configuration object.
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
         
-        // Start the sign in flow!
-      //  do {
-            GIDSignIn.sharedInstance.signIn(withPresenting: vc) { result, error in
+        GIDSignIn.sharedInstance.signIn(withPresenting: vc) { result, error in
+            guard error == nil else {
+                errorHandler?(error)
+                return
+            }
+            guard let user = result?.user else {return}
+            guard let idToken = user.idToken?.tokenString else {
+                errorHandler?( AuthorizeError.errorToken)
+                return
+            }
+            let accessToken = user.accessToken.tokenString
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: accessToken)
+            Auth.auth().signIn(with: credential) { result, error in
                 guard error == nil else {
                     errorHandler?(error)
                     return
                 }
-                guard let user = result?.user else {return}
-                guard let idToken = user.idToken?.tokenString else {
-                    errorHandler?( AuthorizeError.errorToken)
-                    return
-                }
-                let accessToken = user.accessToken.tokenString
-                let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                               accessToken: accessToken)
-                Auth.auth().signIn(with: credential) { result, error in
-                    guard error == nil else {
-                        errorHandler?(error)
-                        return
-                    }
-                    guard let user = result?.user else {return}
-                    self.uid = user.uid
-                    guard !user.isAnonymous else {return}
-                    self.fetchProfile() { error in
-                        guard let error = error else {return}
-                        self.error = error
+                guard let result = result else {return}
+                let userId = result.user.uid
+                self.uid = userId
+                self.documentIsExists(userUID: userId) { value, error in
+                    if let error = error {
+                        print(error.localizedDescription)
+                    } else if !value {
+                        let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
+                        self.sendProfileToServer(profile: userProfile, errorHandler: nil)
+                    } else {
+                        print("Document already exists")
                     }
                 }
-                
             }
-            
-           // let user = userAuthentication.user
-//            guard let idToken = user.idToken?.tokenString else {
-//                errorHandler?( AuthorizeError.errorToken)
-//                return
-//            }
-//            let accessToken = user.accessToken.tokenString
-//            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-//                                                           accessToken: accessToken)
-            //let result = try await Auth.auth().signIn(with: credential)
-//            self.uid = result.user.uid
-//            guard !result.user.isAnonymous else {return}
-//            self.fetchProfile() { error in
-//                guard let error = error else {return}
-//                self.error = error
-//            }
-//        } catch let error {
-//            errorHandler?(error)
-//        }
+        }
+    }
+    
+//MARK: - Apple Authentications:
+   
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let nonce = currentNonce,
+              let appleIDToken = appleIDCredential.identityToken,
+              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+            completionResultTokenApple?(.failure(AuthorizeError.errorToken))
+            return
+        }
+        
+        let token = SignInWithAppleResult(token: idTokenString, nonce: nonce)
+        completionResultTokenApple?(.success(token))
+        }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        completionResultTokenApple?(.failure(AuthorizeError.cancelAppleAuth))
+      }
+    
+    func signInWithApple(token: SignInWithAppleResult) async throws {
+        let credential = OAuthProvider.credential(withProviderID: "apple.com",
+                                                  idToken: token.token,
+                                                  rawNonce: token.nonce)
+        let result = try await Auth.auth().signIn(with: credential)
+        
+        let userId = result.user.uid
+        self.uid = userId
+        documentIsExists(userUID: userId) { value, error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else if !value {
+                let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
+                self.sendProfileToServer(profile: userProfile, errorHandler: nil)
+            } else {
+                print("Document already exists")
+            }
+        }
+    }
+    
+    func startSignInWithAppleFlow(vc: UIViewController, completion: @escaping (Result<SignInWithAppleResult, Error>) -> Void) {
+        
+        let appleHelper = SignInAppleIDHelper()
+        let nonce = appleHelper.randomNonceString()
+        
+        currentNonce = nonce
+        completionResultTokenApple = completion
+        
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = appleHelper.sha256(nonce)
+
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = vc
+        authorizationController.performRequests()
+    }
+    
+    func documentIsExists(userUID:String, completion: @escaping ((Bool, Error? )->Void)) {
+        Firestore.firestore().collection(TitleConstants.nameCollection).document(userUID).getDocument { [weak self] document, error in
+            if let document = document, document.exists {
+                do {
+                    self?.userProfile = try document.data(as: UserProfile.self)
+                    completion(true, nil)
+                } catch {
+                    completion(false, AuthorizeError.errorParceProfile)
+                }
+            } else {
+                self?.userProfile = nil
+                completion(false, nil)
+            }
+        }
     }
 }
+

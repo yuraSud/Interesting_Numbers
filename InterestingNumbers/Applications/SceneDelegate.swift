@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var navigationVC: UINavigationController?
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
         FirebaseApp.configure()
         authorizedService = AuthorizationService.shared
         navigationVC = UINavigationController()
@@ -27,6 +28,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navigationVC
         window?.makeKeyAndVisible()
+        
+        authorizedService?.$sessionState
+            .sink(receiveValue: { state in
+                switch state {
+                case .loggedIn:
+                    self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
+                    
+                case .loggedOut:
+                    self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
+                }
+            }).store(in: &cancellable)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -37,7 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -48,23 +59,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
-        print("enable listener")
-        authorizedService?.$sessionState
-            .sink(receiveValue: { state in
-                switch state {
-                case .loggedIn:
-                    print("nav enable")
-                    self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-                    
-                case .loggedOut:
-                    self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
-                }
-            }).store(in: &cancellable)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        authorizedService?.removeHandleListener()
-        print("remove listener")
+       // authorizedService?.removeHandleListener()
+       // cancellable.removeAll()
+       // print("remove listener")
     }
 
 

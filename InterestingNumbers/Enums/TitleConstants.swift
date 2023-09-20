@@ -30,4 +30,7 @@ enum TitleConstants {
     
     //AuthorizedManager
     static let nameCollection = "users"
+    
+    //AddProductVC
+    static let titleAddVC = " Add product to cloud storage"
 }

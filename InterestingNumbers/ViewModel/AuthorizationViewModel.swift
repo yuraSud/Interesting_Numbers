@@ -15,11 +15,7 @@ class AuthorizationViewModel {
     @Published var name: String = ""
     @Published var password: String = ""
     @Published var email: String = ""
-    @Published var isBusyEmail: Bool = false {
-        didSet {
-            print("isBusyEmail View Model \(isBusyEmail)")
-        }
-    }
+    @Published var isBusyEmail: Bool = false
     
     var cancellable = Set<AnyCancellable>()
     

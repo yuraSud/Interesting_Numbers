@@ -55,7 +55,7 @@ class ProfileViewController: UIViewController {
     }
     
     func fetchCurrentUser() {
-        authService.fetchProfile()
+        authService.fetchProfile(uidDocument: authService.uid)
         user = authService.userProfile
         guard let _ = user else {
             self.user = UserProfile(name: "?", email: "Anonymous@mail.com")
@@ -93,11 +93,8 @@ class ProfileViewController: UIViewController {
         closeVC()
     }
     
-    @objc func addCountRequest() {
-        authService.addCountRequest(countRequest: 64) { error in
-            guard let error else {return}
-            self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
-        }
+    @objc func editUserProfile() {
+        editProfileAlert()
     }
     
 //MARK: - private Functions:
@@ -157,7 +154,7 @@ class ProfileViewController: UIViewController {
     private func addTargetButton() {
         logOutProfileButton.addTarget(self, action: #selector(logOut), for: .touchUpInside)
         deletProfileButton.addTarget(self, action: #selector(deleteUser), for: .touchUpInside)
-        editProfileButton.addTarget(self, action: #selector(addCountRequest), for: .touchUpInside)
+        editProfileButton.addTarget(self, action: #selector(editUserProfile), for: .touchUpInside)
     }
     
     private func setConstraints() {
@@ -179,5 +176,45 @@ class ProfileViewController: UIViewController {
             
             usersImageLabel.widthAnchor.constraint(equalTo: usersImageLabel.heightAnchor)
         ])
+    }
+    
+    private func editProfileAlert() {
+        let alert = UIAlertController(title: "Edit profile", message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let name = alert.textFields?.first?.text,
+                  !name.isEmpty,
+                  let email = alert.textFields?.last?.text,
+                  !email.isEmpty,
+                  var user = self.user
+            else {
+                self.presentAlert(with: "Error", message: "Fields must not be empty", buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                return
+            }
+            user.name = name
+            user.email = email
+            self.authService.sendProfileToServer(profile: user) { error in
+                self.presentAlert(with: "Error", message: error?.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+       
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+       
+        alert.addTextField { nameTF in
+            nameTF.placeholder = "name"
+            nameTF.text = self.user?.name
+            nameTF.clearButtonMode = .whileEditing
+            nameTF.autocorrectionType = .no
+            nameTF.autocapitalizationType = .none
+        }
+        alert.addTextField { emailTF in
+            emailTF.placeholder = "name"
+            emailTF.text = self.user?.email
+            emailTF.clearButtonMode = .whileEditing
+            emailTF.autocorrectionType = .no
+            emailTF.autocapitalizationType = .none
+        }
+        present(alert, animated: true)
     }
 }

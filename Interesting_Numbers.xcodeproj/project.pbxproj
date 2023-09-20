@@ -34,7 +34,13 @@
 		9C2C641B2AB4376A003F0B73 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C641A2AB4376A003F0B73 /* ProfileViewController.swift */; };
 		9C2C641D2AB474BC003F0B73 /* AuthorizationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C641C2AB474BC003F0B73 /* AuthorizationViewModel.swift */; };
 		9C2C641F2AB7298C003F0B73 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C641E2AB7298C003F0B73 /* String+Extension.swift */; };
-		9C2C64212AB73CAB003F0B73 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C2C64202AB73CAB003F0B73 /* GoogleService-Info.plist */; };
+		9C2C64262AB8B20C003F0B73 /* SignInWithAppleResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C64252AB8B20C003F0B73 /* SignInWithAppleResult.swift */; };
+		9C2C642B2AB8CEBC003F0B73 /* SignInAppleIDHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C642A2AB8CEBC003F0B73 /* SignInAppleIDHelper.swift */; };
+		9C2C642F2AB8E241003F0B73 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C2C642E2AB8E241003F0B73 /* GoogleService-Info.plist */; };
+		9C2C64312AB99065003F0B73 /* StoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C64302AB99065003F0B73 /* StoreViewController.swift */; };
+		9C2C64332AB9979C003F0B73 /* AddProductsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C64322AB9979C003F0B73 /* AddProductsViewController.swift */; };
+		9C2C64352AB9B7F5003F0B73 /* NumbersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C64342AB9B7F5003F0B73 /* NumbersModel.swift */; };
+		9C2C64372AB9F65F003F0B73 /* AddProductViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C64362AB9F65F003F0B73 /* AddProductViewModel.swift */; };
 		9CE132332AAE3C0100527002 /* ImageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132322AAE3C0100527002 /* ImageConstants.swift */; };
 		9CE132352AAEF0F500527002 /* ChoiseNumbersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */; };
 /* End PBXBuildFile section */
@@ -61,7 +67,14 @@
 		9C2C641A2AB4376A003F0B73 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		9C2C641C2AB474BC003F0B73 /* AuthorizationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationViewModel.swift; sourceTree = "<group>"; };
 		9C2C641E2AB7298C003F0B73 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
-		9C2C64202AB73CAB003F0B73 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9C2C64222AB88543003F0B73 /* Interesting_Numbers.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Interesting_Numbers.entitlements; sourceTree = "<group>"; };
+		9C2C64252AB8B20C003F0B73 /* SignInWithAppleResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleResult.swift; sourceTree = "<group>"; };
+		9C2C642A2AB8CEBC003F0B73 /* SignInAppleIDHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInAppleIDHelper.swift; sourceTree = "<group>"; };
+		9C2C642E2AB8E241003F0B73 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9C2C64302AB99065003F0B73 /* StoreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreViewController.swift; sourceTree = "<group>"; };
+		9C2C64322AB9979C003F0B73 /* AddProductsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductsViewController.swift; sourceTree = "<group>"; };
+		9C2C64342AB9B7F5003F0B73 /* NumbersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumbersModel.swift; sourceTree = "<group>"; };
+		9C2C64362AB9F65F003F0B73 /* AddProductViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddProductViewModel.swift; sourceTree = "<group>"; };
 		9CE132322AAE3C0100527002 /* ImageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConstants.swift; sourceTree = "<group>"; };
 		9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiseNumbersViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -89,6 +102,8 @@
 			isa = PBXGroup;
 			children = (
 				202B020E2AB22F81004C70AF /* UserProfile.swift */,
+				9C2C64252AB8B20C003F0B73 /* SignInWithAppleResult.swift */,
+				9C2C64342AB9B7F5003F0B73 /* NumbersModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -96,6 +111,7 @@
 		20D372272AAC63450095041A = {
 			isa = PBXGroup;
 			children = (
+				9C2C64222AB88543003F0B73 /* Interesting_Numbers.entitlements */,
 				20D372322AAC63450095041A /* InterestingNumbers */,
 				9C2C64142AB35FD2003F0B73 /* Interesting_Numbers.app */,
 			);
@@ -133,6 +149,8 @@
 				20D372372AAC63450095041A /* AuthorisedViewController.swift */,
 				9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */,
 				9C2C641A2AB4376A003F0B73 /* ProfileViewController.swift */,
+				9C2C64302AB99065003F0B73 /* StoreViewController.swift */,
+				9C2C64322AB9979C003F0B73 /* AddProductsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -143,7 +161,7 @@
 				20D3723E2AAC63480095041A /* LaunchScreen.storyboard */,
 				20D3723C2AAC63480095041A /* Assets.xcassets */,
 				20D372412AAC63480095041A /* Info.plist */,
-				9C2C64202AB73CAB003F0B73 /* GoogleService-Info.plist */,
+				9C2C642E2AB8E241003F0B73 /* GoogleService-Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -183,6 +201,7 @@
 			isa = PBXGroup;
 			children = (
 				9C2C640A2AB301B4003F0B73 /* AuthorizationService.swift */,
+				9C2C642A2AB8CEBC003F0B73 /* SignInAppleIDHelper.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -191,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				9C2C641C2AB474BC003F0B73 /* AuthorizationViewModel.swift */,
+				9C2C64362AB9F65F003F0B73 /* AddProductViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -267,9 +287,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C2C64212AB73CAB003F0B73 /* GoogleService-Info.plist in Resources */,
 				20D372402AAC63480095041A /* LaunchScreen.storyboard in Resources */,
 				20D3723D2AAC63480095041A /* Assets.xcassets in Resources */,
+				9C2C642F2AB8E241003F0B73 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,12 +302,18 @@
 			files = (
 				9C2C641D2AB474BC003F0B73 /* AuthorizationViewModel.swift in Sources */,
 				20D372512AAC83B30095041A /* UIView+Extension.swift in Sources */,
+				9C2C64352AB9B7F5003F0B73 /* NumbersModel.swift in Sources */,
+				9C2C64312AB99065003F0B73 /* StoreViewController.swift in Sources */,
 				20D372542AADA9E00095041A /* EnterViewController.swift in Sources */,
 				9C2C641F2AB7298C003F0B73 /* String+Extension.swift in Sources */,
 				9C2C640D2AB3028A003F0B73 /* SessionState.swift in Sources */,
+				9C2C64332AB9979C003F0B73 /* AddProductsViewController.swift in Sources */,
 				9CE132352AAEF0F500527002 /* ChoiseNumbersViewController.swift in Sources */,
 				9C2C64122AB30A94003F0B73 /* AuthorizeError.swift in Sources */,
+				9C2C642B2AB8CEBC003F0B73 /* SignInAppleIDHelper.swift in Sources */,
+				9C2C64262AB8B20C003F0B73 /* SignInWithAppleResult.swift in Sources */,
 				202B020F2AB22F81004C70AF /* UserProfile.swift in Sources */,
+				9C2C64372AB9F65F003F0B73 /* AddProductViewModel.swift in Sources */,
 				20D372382AAC63450095041A /* AuthorisedViewController.swift in Sources */,
 				9C2C641B2AB4376A003F0B73 /* ProfileViewController.swift in Sources */,
 				20D3724C2AAC68E50095041A /* AuthorisedView.swift in Sources */,
@@ -435,9 +461,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Interesting_Numbers.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P54RYJ8289;
+				DEVELOPMENT_TEAM = 87U58BP9D2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = InterestingNumbers/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -449,8 +477,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sud.InterestingNumbers;
+				PRODUCT_BUNDLE_IDENTIFIER = "sud.Interesting-Numbers.SignIn";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -462,9 +491,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Interesting_Numbers.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = P54RYJ8289;
+				DEVELOPMENT_TEAM = 87U58BP9D2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = InterestingNumbers/Resources/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -476,8 +507,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = sud.InterestingNumbers;
+				PRODUCT_BUNDLE_IDENTIFIER = "sud.Interesting-Numbers.SignIn";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

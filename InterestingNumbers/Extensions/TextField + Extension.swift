@@ -9,16 +9,43 @@ import UIKit
 import Combine
 
 
-extension UITextField {
+class UITextFieldRightView: UITextField {
 
-    func setCustomPlaceholder(placeholderLabel: UILabel, frame: CGRect) {
-        self.addSubview(placeholderLabel)
-        placeholderLabel.frame = frame
-        placeholderLabel.textColor = .lightGray
-        placeholderLabel.font = .systemFont(ofSize: 15)
-        
-        self.autocapitalizationType = .none
-        self.autocorrectionType = .no
+    var padding = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 70)
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override open func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+    
+    func setupRightLabel(rightText: String) {
+        let rightLabel = UILabel()
+        let rightView = UIView(frame: CGRect(x: 0, y: 10, width: 40, height: 20))
+        rightLabel.frame = .init(x: 0, y: 0, width: 55, height: 25)
+        rightLabel.textColor = .lightGray
+        rightLabel.text = rightText
+        rightView.addSubview(rightLabel)
+        self.rightView = rightView
+        self.rightViewMode = .always
+    }
+    
+    func setPadding(paddingText: UIEdgeInsets) {
+        self.padding = paddingText
     }
 }
 

@@ -6,8 +6,14 @@
 //
 
 import UIKit
+import AuthenticationServices
 
-extension UIViewController {
+extension UIViewController: ASAuthorizationControllerPresentationContextProviding {
+   
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        guard let window = self.view.window else {return ASPresentationAnchor()}
+        return window
+    }
     
     func presentAlert(with title: String, message: String?, buttonTitles options: String...,styleActionArray: [UIAlertAction.Style?], alertStyle: UIAlertController.Style, completion: ((Int) -> Void)?) {
         
@@ -22,4 +28,6 @@ extension UIViewController {
             self.present(alertController, animated: true, completion: nil)
         }
     }
+    
+    
 }

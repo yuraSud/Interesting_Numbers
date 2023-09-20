@@ -15,4 +15,5 @@ enum AuthorizeError: String, Error {
     case noFoundID = "NO client ID found in FireBase configuration"
     case notRootVC = "There is no root view controller "
     case errorToken = "ID token missing"
+    case cancelAppleAuth = "Canceled Apple sign in authentication"
 }
