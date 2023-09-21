@@ -29,8 +29,12 @@ enum TitleConstants {
     static let registerButton = "Register"
     
     //AuthorizedManager
-    static let nameCollection = "users"
+    static let profileCollection = "users"
+    static let productCollection = "Products"
     
     //AddProductVC
     static let titleAddVC = " Add product to cloud storage"
+    static let productsHeader = "Products"
+    static let notificationError = "notificationError"
+    
 }

@@ -32,7 +32,8 @@ class ChoiseNumbersViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        fetchUser()
+        user = authService.userProfile
+        updateLabels()
         
     }
     
@@ -95,16 +96,12 @@ class ChoiseNumbersViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: storeButton)
     }
     
-    func fetchUser() {
-        let isAnonym = authService.userIsAnonymously()
-        updateLabels(isAnonym)
-    }
-    
-    func updateLabels(_ isAnonymously: Bool) {
-        let title = isAnonymously ? "??" : user?.firstLetter
+    func updateLabels() {
+        let title = user?.firstLetter
         let navCount = navigationController?.viewControllers.count ?? 100
+        print("nav count", navCount)
         userButton.setTitle(title, for: .normal)
-        nameLabel.text = isAnonymously ? "I am anonymously" : "\(user?.name ?? "not name") have email\n \(user?.email ?? "not email"), \nand\n uid = \(authService.uid)\n count nav = \(navCount)"
+        nameLabel.text = "\(user?.name ?? "not name") have email\n \(user?.email ?? "not email"), \nand\n uid = \(authService.uid)\n count nav = \(navCount)"
     }
     
     func sinkForUpdateUsers() {
@@ -113,7 +110,7 @@ class ChoiseNumbersViewController: UIViewController {
             .filter{ $0 != nil }
             .sink { profile in
                 self.user = profile
-                self.fetchUser()
+                self.updateLabels()
             }.store(in: &cancellable)
     }
 }

@@ -19,6 +19,7 @@ import AuthenticationServices
 
 final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
+    var request = 0
     @Published var userProfile: UserProfile?
     @Published var sessionState: SessionState = .loggedOut
     @Published var uid = ""
@@ -29,6 +30,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     }
     
     var completionResultTokenApple: ((Result<SignInWithAppleResult, Error>)-> Void)?
+    var complitionStringToken: ((String)->())?
     var currentNonce: String? //Apple authorization
     var cancellables = Set<AnyCancellable>()
     private var handle: AuthStateDidChangeListenerHandle?
@@ -37,10 +39,10 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     private override init() {
         super.init()
-        setupFirebaseAuth()
     }
     
     func setupFirebaseAuth() {
+        print("startListener")
         handle = Auth.auth().addStateDidChangeListener {[weak self] auth, user in
             guard let self = self else {return}
             self.sessionState = user == nil ? .loggedOut : .loggedIn
@@ -57,9 +59,11 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     ///Fetch users profile document from server FireStore
     func fetchProfile(uidDocument: String, errorHandler: ((Error?)->Void)? = nil) {
        
-        Firestore.firestore().collection(TitleConstants.nameCollection).document(uidDocument).getDocument { [weak self] document, error in
+        Firestore.firestore().collection(TitleConstants.profileCollection).document(uidDocument).getDocument { [weak self] document, error in
             if let document = document, document.exists {
                 do {
+                    self?.request += 1
+                    print(self?.request ?? 0, "request")
                     self?.userProfile = try document.data(as: UserProfile.self)
                 } catch {
                     errorHandler?(AuthorizeError.errorParceProfile)
@@ -79,8 +83,9 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
             case .none:
                 print("None in signUp in Manager")
             case .some(let result):
-                self?.uid = result.user.uid
-                self?.sendProfileToServer(profile: profile) { error in
+                let uid = result.user.uid
+                self?.uid = uid
+                DatabaseService.shared.sendProfileToServer(uid: uid, profile: profile) { error in
                     guard let error = error else {return}
                     errorHandler?(error)
                 }
@@ -91,17 +96,9 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         }
     }
     
-    func sendProfileToServer(profile: UserProfile,errorHandler: ((Error?)->Void)?) {
-        let reference = Firestore.firestore().collection(TitleConstants.nameCollection).document(uid)
-        do {
-            try reference.setData(from: profile, merge: true)
-        } catch {
-            errorHandler?(AuthorizeError.sendDataFailed)
-        }
-    }
     //TODO: - переделать посылку запросов
     func addCountRequest(countRequest: Int, errorHandler: ((Error?)->Void)?) {
-        let reference = Firestore.firestore().collection(TitleConstants.nameCollection).document(uid)
+        let reference = Firestore.firestore().collection(TitleConstants.profileCollection).document(uid)
         do {
             userProfile?.countRequest = countRequest
             try reference.setData(from: userProfile, merge: true)
@@ -145,6 +142,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     func removeHandleListener() {
         guard let handle = handle else {return}
         Auth.auth().removeStateDidChangeListener(handle)
+        self.handle = nil
     }
     
     func resetPasswordByEmail(email: String, errorHandler: ((Error?)->Void)? ) {
@@ -154,16 +152,33 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         }
     }
     
-    func deleteUser(errorHandler: ((Error?)->Void)? ) {
-        Firestore.firestore().collection(TitleConstants.nameCollection).document(self.uid).delete { error in
-            guard let error else {return}
-            errorHandler?(error)
+    func deleteUser(vc: UIViewController, errorHandler: ((Error?)->Void)? ) {
+        guard let user = Auth.auth().currentUser else {return}
+        if user.providerData.first?.providerID == "apple.com" {
+            deleteCurrentAppleUser(vc: vc) { tokenString in
+                Auth.auth().revokeToken(withAuthorizationCode: tokenString) { error in
+                    print(error?.localizedDescription ?? "nilllll")
+                }
+                DatabaseService.shared.deleteProfile(uid: user.uid) { error in
+                    errorHandler?(error)
+                }
+                user.delete(completion: { error in
+                    guard let error else {return}
+                    errorHandler?(error)
+                })
+                self.logOut()
+//                vc.dismiss(animated: true)
+            }
+        } else {
+            DatabaseService.shared.deleteProfile(uid: user.uid) { error in
+                errorHandler?(error)
+            }
+            user.delete(completion: { error in
+                guard let error else {return}
+                errorHandler?(error)
+            })
+            logOut()
         }
-        
-        Auth.auth().currentUser?.delete(completion: { error in
-            guard let error else {return}
-            errorHandler?(error)
-        })
     }
     
     ///Check your email - Is already exists.
@@ -216,7 +231,11 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
                         print(error.localizedDescription)
                     } else if !value {
                         let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
-                        self.sendProfileToServer(profile: userProfile, errorHandler: nil)
+                        DatabaseService.shared.sendProfileToServer(uid: userId, profile: userProfile) { error in
+                            guard let error else {return}
+                            self.error = error
+                        }
+                        self.fetchProfile(uidDocument: userId)
                     } else {
                         print("Document already exists")
                     }
@@ -236,7 +255,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
             completionResultTokenApple?(.failure(AuthorizeError.errorToken))
             return
         }
-        
+        complitionStringToken?(idTokenString)
         let token = SignInWithAppleResult(token: idTokenString, nonce: nonce)
         completionResultTokenApple?(.success(token))
         }
@@ -258,7 +277,11 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
                 print(error.localizedDescription)
             } else if !value {
                 let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
-                self.sendProfileToServer(profile: userProfile, errorHandler: nil)
+                DatabaseService.shared.sendProfileToServer(uid: userId, profile: userProfile) { error in
+                    guard let error else {return}
+                    self.error = error
+                }
+                self.fetchProfile(uidDocument: userId)
             } else {
                 print("Document already exists")
             }
@@ -271,7 +294,6 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         let nonce = appleHelper.randomNonceString()
         
         currentNonce = nonce
-        completionResultTokenApple = completion
         
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
@@ -283,10 +305,30 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = vc
         authorizationController.performRequests()
+        completionResultTokenApple = completion
+    }
+    
+    private func deleteCurrentAppleUser(vc: UIViewController, completion: @escaping (String) -> Void) {
+        let appleHelper = SignInAppleIDHelper()
+        let nonce = appleHelper.randomNonceString()
+        
+        currentNonce = nonce
+        
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        request.nonce = appleHelper.sha256(nonce)
+
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = vc
+        authorizationController.performRequests()
+        complitionStringToken = completion
     }
     
     func documentIsExists(userUID:String, completion: @escaping ((Bool, Error? )->Void)) {
-        Firestore.firestore().collection(TitleConstants.nameCollection).document(userUID).getDocument { [weak self] document, error in
+        Firestore.firestore().collection(TitleConstants.profileCollection).document(userUID).getDocument { [weak self] document, error in
             if let document = document, document.exists {
                 do {
                     self?.userProfile = try document.data(as: UserProfile.self)

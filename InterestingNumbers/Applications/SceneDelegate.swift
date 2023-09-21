@@ -15,30 +15,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var cancellable = Set<AnyCancellable>()
-    var authorizedService: AuthorizationService?
-    var navigationVC: UINavigationController?
+    let authorizedService = AuthorizationService.shared
+    let navigationVC = UINavigationController()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         FirebaseApp.configure()
-        authorizedService = AuthorizationService.shared
-        navigationVC = UINavigationController()
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navigationVC
         window?.makeKeyAndVisible()
         
-        authorizedService?.$sessionState
+        authorizedService.$sessionState
             .sink(receiveValue: { state in
                 switch state {
-                case .loggedIn:
-                    self.navigationVC?.setViewControllers([ChoiseNumbersViewController()], animated: true)
-                    
-                case .loggedOut:
-                    self.navigationVC?.setViewControllers([EnterViewController()], animated: true)
+                case .loggedIn :
+                    print("log in")
+                    self.navigationVC.setViewControllers([ChoiseNumbersViewController()], animated: true)
+                case .loggedOut :
+                    self.navigationVC.setViewControllers([EnterViewController()], animated: true)
                 }
             }).store(in: &cancellable)
+        authorizedService.setupFirebaseAuth()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -49,6 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -62,9 +62,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-       // authorizedService?.removeHandleListener()
-       // cancellable.removeAll()
-       // print("remove listener")
+//        authorizedService.removeHandleListener()
     }
 
 

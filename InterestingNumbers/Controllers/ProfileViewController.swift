@@ -85,12 +85,15 @@ class ProfileViewController: UIViewController {
     }
     
     @objc private func deleteUser() {
-        self.authService.deleteUser { error in
+        defer {
+            closeVC()
+        }
+        self.authService.deleteUser(vc: self) { error in
             guard let error else {return}
             
             self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
-        closeVC()
+        
     }
     
     @objc func editUserProfile() {
@@ -190,12 +193,17 @@ class ProfileViewController: UIViewController {
                 self.presentAlert(with: "Error", message: "Fields must not be empty", buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
                 return
             }
+            
             user.name = name
             user.email = email
-            self.authService.sendProfileToServer(profile: user) { error in
+            
+            DatabaseService.shared.sendProfileToServer(uid: user.uid, profile: user) { error in
                 self.presentAlert(with: "Error", message: error?.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
+            self.fetchCurrentUser()
+            
         }
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
        
         alert.addAction(okAction)

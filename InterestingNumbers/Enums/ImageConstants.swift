@@ -28,4 +28,5 @@ enum ImageConstants {
     
     //AddProductVC
     static let addImage = UIImage(named: "image")
+    static let book = UIImage(systemName: "book.closed")
 }

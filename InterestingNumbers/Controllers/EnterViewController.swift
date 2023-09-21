@@ -10,7 +10,6 @@ import GoogleSignIn
 import AuthenticationServices
 import FirebaseAuth
 import CryptoKit
-
 import Foundation
 import Firebase
 import FirebaseFirestore
@@ -24,10 +23,10 @@ class EnterViewController: UIViewController {
     let tryGuestButton = UIButton(type: .system)
     var authButtonsStack = UIStackView()
     var signUpStack = UIStackView()
-    let authService = AuthorizationService.shared
     let googleButton = UIButton()
     let appleButton = UIButton()
-    
+    var authorizedService = AuthorizationService.shared
+   
     var currentNonce: String? //Apple authorization
     
 // MARK: - life cycle
@@ -43,9 +42,14 @@ class EnterViewController: UIViewController {
         setGoogleAppleButton()
         setConstraints()
     }
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
 
 //MARK: - private func
@@ -63,23 +67,23 @@ class EnterViewController: UIViewController {
     }
     
     @objc func goToAnonymous() {
-        authService.loginAnonymously { err in
+        authorizedService.loginAnonymously { err in
             guard let err = err else {return}
             self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
     }
     
     @objc func signUpWithGoogle() {
-        authService.authenticationWithGoogle(vc: self)
+        authorizedService.authenticationWithGoogle(vc: self)
     }
     
     @objc func signUpWithApple() {
-        authService.startSignInWithAppleFlow(vc: self) { result in
+        authorizedService.startSignInWithAppleFlow(vc: self) { result in
             switch result {
             case .success(let tokenResult):
                 Task {
                     do {
-                        try await self.authService.signInWithApple(token: tokenResult)
+                        try await self.authorizedService.signInWithApple(token: tokenResult)
                         
                     } catch let err {
                         self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)

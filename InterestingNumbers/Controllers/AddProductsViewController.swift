@@ -18,13 +18,8 @@ class AddProductsViewController: UIViewController {
     let costTextField = UITextFieldRightView()
     let addButton = UIButton(type: .system)
     var stackTF = UIStackView()
-    var imageProduct = UIImage() {
-        didSet {
-            addImageView.image = imageProduct
-            addViewModel.image = imageProduct.pngData()
-        }
-    }
    
+    let reloadSubject = PassthroughSubject<Bool,Never>()
     var subscribers = Set<AnyCancellable>()
     
     //MARK: - Life cycle:
@@ -54,7 +49,11 @@ class AddProductsViewController: UIViewController {
     }
     
     @objc func addProductsToStorage() {
-        addViewModel.addToServer()
+        addViewModel.addToServer() { isUpload in
+            if isUpload {
+                self.reloadSubject.send(true)
+            }
+        }
         closeVC()
     }
     
@@ -212,11 +211,14 @@ extension AddProductsViewController: UIImagePickerControllerDelegate,  UINavigat
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        var imageProduct = UIImage()
         if let picImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
             imageProduct = picImage
         } else if let originImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imageProduct = originImage
         }
+        addImageView.image = imageProduct
+        addViewModel.image = imageProduct
         dismiss(animated: true)
     }
 }

@@ -7,14 +7,19 @@
 
 import Foundation
 import Combine
+import UIKit
 
 class AddProductViewModel {
     
-    let authManager = AuthorizationService.shared
-    
     @Published var name: String = ""
     @Published var cost: String = ""
-    @Published var image: Data?
+    @Published var image: UIImage?
+    var error: String? {
+        didSet {
+            guard let error else {return}
+            postErrorMassedge(textError: error)
+        }
+    }
     
     var cancellable = Set<AnyCancellable>()
     
@@ -29,12 +34,24 @@ class AddProductViewModel {
             .eraseToAnyPublisher()
     }
     
-    init() {
-        
+    func addToServer(completion: @escaping (Bool)->()) {
+        guard let imageData = image?.jpegData(compressionQuality: 0.2) else {
+            error = "Do not transform Jpeg to Data"
+            return
+        }
+        let product = ProductModel(nameProduct: name, cost: cost, id: UUID().uuidString)
+        DatabaseService.shared.addProduct(product: product, image: imageData) { result in
+            switch result {
+            case .success(let sizeInfo):
+                self.error = sizeInfo
+                completion(true)
+            case .failure(let err):
+                self.error = err.localizedDescription
+            }
+        }
     }
     
-    func addToServer() {
-        print("Add to server")
+    private func postErrorMassedge(textError: String) {
+        NotificationCenter.default.post(name: Notification.errorPost, object: nil, userInfo: ["error": textError])
     }
-    
 }
