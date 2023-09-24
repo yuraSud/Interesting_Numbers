@@ -14,7 +14,7 @@ class StorageService {
     private init() {}
     
     private let storage = Storage.storage().reference()
-
+    
     enum Refferencies {
         case product
         case header
@@ -32,8 +32,6 @@ class StorageService {
         }
     }
     
-    
-    
     func uploadFile(id: String, image: Data, completion: @escaping (Result<String, Error>) -> Void) {
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpg"
@@ -47,23 +45,16 @@ class StorageService {
         }
     }
     
-    func downloadImage(refference: Refferencies, id: String, completion: @escaping (Result<Data,Error>)->()) {
+    func downloadImage(refference: Refferencies, id: String, completion: @escaping (Result<URL,Error>)->()) {
         refference.ref.child(id)
-//            .downloadURL { result in
-//            switch result {
-//            case .success(let url):
-//                completion(.success(url))
-//            case .failure(let error):
-//                completion(.failure(error))
-//            }
-            .getData(maxSize: (2*1024*1024)) { result in
-            switch result {
-            case .success(let data):
-                completion(.success(data))
-            case .failure(let error):
-                completion(.failure(error))
+            .downloadURL { result in
+                switch result {
+                case .success(let url):
+                    completion(.success(url))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             }
-        }
     }
     
     func deleteImage(id: String, completion: @escaping (Error)->()) {
@@ -72,7 +63,7 @@ class StorageService {
             completion(error)
         }
     }
-
+    
     func downloadFileHtml(comletion: @escaping (URL)->Void) {
         let fileManager = FileManagerService.instance
         Refferencies.html.ref.listAll { result, error in
@@ -98,9 +89,7 @@ class StorageService {
                         print(error.localizedDescription)
                     }
                 }
-                
             }
         }
     }
-    
 }

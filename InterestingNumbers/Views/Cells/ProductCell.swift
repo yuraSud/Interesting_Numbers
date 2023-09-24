@@ -90,9 +90,8 @@ class ProductCell: UICollectionViewCell {
        
         StorageService.shared.downloadImage(refference: .product, id: product.id) { result in
             switch result {
-            case .success(let data):
-               // self.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
-                self.imageView.image = UIImage(data: data)
+            case .success(let url):
+                self.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
             case .failure(let err):
                 print(err)
             }

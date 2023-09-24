@@ -44,9 +44,8 @@ class HeaderCollection: UICollectionViewCell {
         guard let headerData else {return}
         StorageService.shared.downloadImage(refference: .header, id: headerData.imageId) { result in
             switch result {
-            case .success(let data):
-               // self.headerImageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
-                self.headerImageView.image = UIImage(data: data)
+            case .success(let url):
+                self.headerImageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
             case .failure(let err):
                 print(err)
             }
