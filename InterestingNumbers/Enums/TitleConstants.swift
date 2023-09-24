@@ -31,7 +31,6 @@ enum TitleConstants {
     //AuthorizedManager
     static let profileCollection = "users"
     static let productCollection = "Products"
-    static let categoriesCollection = "Categories"
     static let headerModel = "Headers"
     
     //AddProductVC
@@ -39,4 +38,17 @@ enum TitleConstants {
     static let productsHeader = "Products"
     static let notificationError = "notificationError"
     
+    //ChoiseNumberVC
+    static let enterLabel = "Enter here"
+    static let showButton = "Display Fact"
+    
+    static let userNumber = "User\n number"
+    static let randomNumber = "Random\n number"
+    static let rangeNumber = "Namber\n in a range"
+    static let multipleNumber = "Date\n numbers"
+    
+    static let placeholderUserNumber = "Input number like 45"
+    static let placeholderRandomNumber = "Input random number"
+    static let placeholderRangeNumber = "Input number like 45..67"
+    static let placeholderDateNumber = "Input date like month/day (8/29)"
 }

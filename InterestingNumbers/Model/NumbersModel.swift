@@ -7,6 +7,15 @@
 
 import Foundation
 
-struct NumbersModel: Codable {
+typealias RangeNumbers = [String: String]
+
+struct ChooseNumbers: Codable {
     
+    var text: String? = nil
+    var year: Int? = nil
+    var number: Int? = nil
+    var found: Bool? = nil
+    var type: String? = nil
+    
+    var typeRequest: TypeRequest? = nil
 }

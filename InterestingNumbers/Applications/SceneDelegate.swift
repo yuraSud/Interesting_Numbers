@@ -7,9 +7,9 @@
 
 import UIKit
 import FirebaseCore
-import FirebaseFirestore
+//import FirebaseFirestore
 import Combine
-import GoogleSignIn
+//import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 

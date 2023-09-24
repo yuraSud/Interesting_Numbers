@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Firebase
+//import Firebase
 import FirebaseCore
 import FirebaseFirestore
-import FirebaseFirestoreSwift
+//import FirebaseFirestoreSwift
 import Combine
 import FirebaseAuth
 import GoogleSignIn

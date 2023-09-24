@@ -23,10 +23,14 @@ enum ImageConstants {
     static let emailOk = UIImage(systemName: "person.crop.circle.badge.checkmark")
     static let emailBusy = UIImage(systemName: "person.crop.circle.fill.badge.xmark")
     
-//ChoiseNumberVC
+    //ChoiseNumberVC
     static let rightBarButton = UIImage(systemName: "staroflife.fill")
     
     //AddProductVC
     static let addImage = UIImage(named: "image")
     static let book = UIImage(systemName: "book.closed")
+
+    //descriptionVC
+    static let close = UIImage(systemName: "multiply.circle")
+
 }
