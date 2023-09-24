@@ -7,6 +7,7 @@
 import Combine
 import Foundation
 import UIKit
+import SDWebImage
 
 class ProductCell: UICollectionViewCell {
     
@@ -85,9 +86,12 @@ class ProductCell: UICollectionViewCell {
             guard let product = productModel else {return}
             self.nameProductLabel.text = product.nameProduct
             self.costLabel.text = product.cost + " €"
-        StorageService.shared.downloadImage(id: product.id) { result in
+        
+       
+        StorageService.shared.downloadImage(refference: .product, id: product.id) { result in
             switch result {
             case .success(let data):
+               // self.imageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
                 self.imageView.image = UIImage(data: data)
             case .failure(let err):
                 print(err)

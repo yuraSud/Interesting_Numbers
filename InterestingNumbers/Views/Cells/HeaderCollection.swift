@@ -7,10 +7,16 @@
 
 import Foundation
 import UIKit
+import SDWebImage
 
 class HeaderCollection: UICollectionViewCell {
     
     static let headerIdentifier = "HeaderCollection"
+    var headerData: HeaderSectionModel? {
+        didSet {
+            setImageAndTitleForHeader()
+        }
+    }
     
     private var stackView = UIStackView()
     private let headerLabel = UILabel()
@@ -32,11 +38,19 @@ class HeaderCollection: UICollectionViewCell {
         headerImageView.image = nil
     }
     
-    func setImageAndTitleForHeader(_ image: UIImage?, _ labelText: String, fontSize: CGFloat, _ buttonIsHidden: Bool) {
-        headerImageView.image = image
-        headerLabel.text = labelText
-        headerLabel.font = .boldSystemFont(ofSize: fontSize)
-       
+    func setImageAndTitleForHeader() {
+        headerLabel.text = headerData?.title
+        headerLabel.font = .boldSystemFont(ofSize: 20)
+        guard let headerData else {return}
+        StorageService.shared.downloadImage(refference: .header, id: headerData.imageId) { result in
+            switch result {
+            case .success(let data):
+               // self.headerImageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .progressiveLoad], completed: nil)
+                self.headerImageView.image = UIImage(data: data)
+            case .failure(let err):
+                print(err)
+            }
+        }
     }
     
     private func setStackView() {

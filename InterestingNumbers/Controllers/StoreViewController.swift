@@ -12,6 +12,7 @@ class StoreViewController: UIViewController {
     let storeViewModel = StoreCollectionViewModel()
     var collectionView : UICollectionView?
     var subscribers = Set<AnyCancellable>()
+    var isUserAdmin = false
     
 //MARK: - Life Cycle:
     override func viewDidLoad() {
@@ -26,7 +27,7 @@ class StoreViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView?.scrollRectToVisible(.zero, animated: true)
-        storeViewModel.getProducts()
+        storeViewModel.refreshDataFromInternet()
     }
     
 //MARK: - @objc Function:
@@ -36,14 +37,16 @@ class StoreViewController: UIViewController {
         
         addItemVC.reloadSubject.sink { isReload in
             if isReload {
-                self.storeViewModel.getProducts()
+                self.storeViewModel.refreshDataFromInternet()
             }
         }
         .store(in: &subscribers)
         
         
         if let sheet = addItemVC.sheetPresentationController {
-            sheet.detents = [.medium()]
+            sheet.detents = [.custom(resolver: { context in
+               return 400
+            })]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.prefersGrabberVisible = true
             sheet.preferredCornerRadius = 25
@@ -51,9 +54,23 @@ class StoreViewController: UIViewController {
         navigationController?.present(addItemVC, animated: true)
     }
     
+    @objc func downloadHtml() {
+        storeViewModel.getAllHtml()
+    }
+    
+    @objc func openHtml() {
+        let webView = WebViewController()
+        webView.url = storeViewModel.url
+        navigationController?.pushViewController(webView, animated: true)
+    }
+    
 //MARK: - Private Function:
     private func setupNavButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
+        let addProduct = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
+        let downloadHtml = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(downloadHtml))
+        let openHtml = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(openHtml))
+        let buttonSet = isUserAdmin ? [downloadHtml,addProduct,openHtml] : [downloadHtml,openHtml]
+        navigationItem.setRightBarButtonItems(buttonSet, animated: false)
     }
     
     private func setUpView() {
@@ -72,11 +89,16 @@ class StoreViewController: UIViewController {
              }
             .store(in: &subscribers)
         
-        storeViewModel.$products
-            .debounce(for: 0.3, scheduler: DispatchQueue.main)
+        storeViewModel.$sectionsData
             .sink { array in
-            print(array.count, "Number products in store")
             self.reloadCollection()
+        }
+        .store(in: &subscribers)
+        
+        storeViewModel.$error
+            .sink { error in
+                guard let error else {return}
+                self.presentAlert(with: error.localizedDescription, message: nil, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
         .store(in: &subscribers)
     }
@@ -116,15 +138,20 @@ extension StoreViewController {
         view.addSubview(collectionView ?? UICollectionView())
     }
     
+    func columnCount(for width: CGFloat) -> Int {
+        let wideMode = width > 800
+            return wideMode ? 6 : 3
+    }
+    
     private func createLayout() -> UICollectionViewLayout {
         
         let layout = UICollectionViewCompositionalLayout { (sectionIndex, leyoutEnvironment)-> NSCollectionLayoutSection? in
+
+            let columns = self.columnCount(for: leyoutEnvironment.container.contentSize.width)
             
-            guard let sectionKind = Section(rawValue: sectionIndex) else {return nil}
-            let columns = sectionKind.columnCount(for: leyoutEnvironment.container.contentSize.width)
-            
-            switch sectionKind {
-            case .product:
+            if sectionIndex == 0 {
+                return self.createFavouriteSection(columns: columns)
+            } else {
                 return self.createProductSection(columns: columns)
             }
         }
@@ -148,6 +175,28 @@ extension StoreViewController {
         section.boundarySupplementaryItems = [sectionHeader]
         return section
     }
+    
+    private func createFavouriteSection(columns: Int = 1) -> NSCollectionLayoutSection {
+        
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(50))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        sectionHeader.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+        
+        let item = CompositionalLayout.createItem(width: .fractionalWidth(1.0), height: .fractionalHeight(1.0), spacing: 5)
+        
+        let groupHeight = UIScreen.main.bounds.height/3.6
+        let groupWidth = groupHeight/1.55
+        
+        let group = CompositionalLayout.createGroupeCount(aligment: .horizontal, width: .absolute(groupWidth), height: .absolute(groupHeight), item: item, count: 1)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 10, leading: 16, bottom: 10, trailing: 16)
+        section.interGroupSpacing = 20
+        section.orthogonalScrollingBehavior = .continuous
+        section.boundarySupplementaryItems = [sectionHeader]
+        return section
+    }
 }
 
 //  MARK: - CollectionViewDelegate,DataSours:
@@ -163,23 +212,17 @@ extension StoreViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let sectionKind = Section(rawValue: indexPath.section) else {return UICollectionViewCell()}
-        switch sectionKind {
-        case .product:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identCell, for: indexPath) as? ProductCell else {return UICollectionViewCell()}
-            cell.productModel = storeViewModel.products[indexPath.row]
-            return cell
-        }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCell.identCell, for: indexPath) as? ProductCell else {return UICollectionViewCell()}
+        cell.productModel = storeViewModel.sectionsData[indexPath.section][indexPath.row]
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HeaderCollection.headerIdentifier, for: indexPath) as? HeaderCollection else {return UICollectionReusableView()}
         
-        if kind == UICollectionView.elementKindSectionHeader {
-            if indexPath.section == 0 {
-                header.setImageAndTitleForHeader(ImageConstants.book, TitleConstants.productsHeader, fontSize: 20, false)
-            }
+        if kind == UICollectionView.elementKindSectionHeader && storeViewModel.sectionsData[indexPath.section].count != 0 {
+            header.headerData = storeViewModel.headers[indexPath.section]
         }
         return header
     }
@@ -189,20 +232,15 @@ extension StoreViewController: UICollectionViewDataSource {
 extension StoreViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let sectionKind = Section(rawValue: indexPath.section) else {return}
-        
-        switch sectionKind {
-            
-        case .product:
-            let cell = collectionView.cellForItem(at: indexPath) as? ProductCell
-            print(cell?.productModel?.nameProduct ?? "nil", "This is product not buy yet")
-        }
+        let cell = collectionView.cellForItem(at: indexPath) as? ProductCell
+        print(cell?.productModel?.nameProduct ?? "nil", "This is product not buy yet")
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard indexPaths.count == 1,
               let cell = collectionView.cellForItem(at: indexPaths[0]) as? ProductCell,
-              let product = cell.productModel
+              let product = cell.productModel,
+              isUserAdmin == true
         else { return nil }
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -215,7 +253,7 @@ extension StoreViewController: UICollectionViewDelegate {
                     switch result {
                     case .success(let succsess):
                         guard succsess else {return}
-                        self?.storeViewModel.getProducts()
+                        self?.storeViewModel.refreshDataFromInternet()
                     case .failure(let error):
                         self?.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
                     }

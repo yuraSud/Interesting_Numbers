@@ -17,3 +17,8 @@ enum AuthorizeError: String, Error {
     case errorToken = "ID token missing"
     case cancelAppleAuth = "Canceled Apple sign in authentication"
 }
+
+enum ModelsError: String, Error {
+    case productHeaderIsEmpty = "Products array or Headers array is empty!"
+    case sectionsArrayIsEmpty = "Data Source array is empty!"
+}

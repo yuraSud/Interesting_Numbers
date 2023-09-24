@@ -13,6 +13,7 @@ class AddProductViewModel {
     
     @Published var name: String = ""
     @Published var cost: String = ""
+    @Published var category: String = ""
     @Published var image: UIImage?
     var error: String? {
         didSet {
@@ -39,7 +40,7 @@ class AddProductViewModel {
             error = "Do not transform Jpeg to Data"
             return
         }
-        let product = ProductModel(nameProduct: name, cost: cost, id: UUID().uuidString)
+        let product = ProductModel(nameProduct: name, cost: cost, id: UUID().uuidString, category: category)
         DatabaseService.shared.addProduct(product: product, image: imageData) { result in
             switch result {
             case .success(let sizeInfo):

@@ -57,6 +57,7 @@ class ChoiseNumbersViewController: UIViewController {
     
     @objc func openStoreVc() {
         let storeVC = StoreViewController()
+        storeVC.isUserAdmin = user?.isUserAdmin ?? false
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationController?.pushViewController(storeVC, animated: true)
     }

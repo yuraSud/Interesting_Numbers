@@ -15,12 +15,9 @@ struct UserProfile: Codable {
     var uid: String = ""
     var countRequest: Int?
     var imageId: String?
+    var isUserAdmin = false
     
     var firstLetter: String {
         return name.first?.uppercased() ?? "?"
     }
 }
-
-//^[123]{0,4}[\.]{0,2}\d{0,4}$
-
-//^([0-9]{0,2})([.][0-9]{0,2})?$

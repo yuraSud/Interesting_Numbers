@@ -16,6 +16,7 @@ class AddProductsViewController: UIViewController {
     let addImageView = UIImageView()
     let nameTextFielf = UITextFieldRightView()
     let costTextField = UITextFieldRightView()
+    let categoryTextField = UITextFieldRightView()
     let addButton = UIButton(type: .system)
     var stackTF = UIStackView()
    
@@ -111,7 +112,7 @@ class AddProductsViewController: UIViewController {
     }
     
     func configureStackTF() {
-        let tfArray = [nameTextFielf,costTextField]
+        let tfArray = [nameTextFielf,costTextField, categoryTextField]
         stackTF = UIStackView(arrangedSubviews: tfArray)
         stackTF.translatesAutoresizingMaskIntoConstraints = false
         stackTF.spacing = 10
@@ -119,15 +120,16 @@ class AddProductsViewController: UIViewController {
         stackTF.distribution = .fillEqually
         view.addSubview(stackTF)
         tfArray.forEach { tf in
-            tf.heightAnchor.constraint(equalToConstant: 40).isActive = true
+            tf.heightAnchor.constraint(equalToConstant: 37).isActive = true
             tf.autocorrectionType = .no
             tf.autocapitalizationType = .none
             tf.borderStyle = .roundedRect
-            tf.font = .systemFont(ofSize: 18)
+            tf.font = .systemFont(ofSize: 17)
             tf.delegate = self
         }
         nameTextFielf.placeholder = "Enter name product"
         costTextField.placeholder = "Enter cost product"
+        categoryTextField.placeholder = "Enter product category"
         costTextField.setupRightLabel(rightText: ", €")
         stackTF.addArrangedSubview(addButton)
         
@@ -150,6 +152,10 @@ class AddProductsViewController: UIViewController {
         
         costTextField.textPublisher
             .assign(to: \.cost, on: addViewModel)
+            .store(in: &subscribers)
+        
+        categoryTextField.textPublisher
+            .assign(to: \.category, on: addViewModel)
             .store(in: &subscribers)
     }
    

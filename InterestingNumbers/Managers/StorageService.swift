@@ -14,15 +14,30 @@ class StorageService {
     private init() {}
     
     private let storage = Storage.storage().reference()
-   
-    private var productRefference: StorageReference { storage.child("Products/ProductImages")}
+
+    enum Refferencies {
+        case product
+        case header
+        case html
+        
+        var ref: StorageReference {
+            switch self {
+            case .product:
+                return Storage.storage().reference().child("Products/ProductImages")
+            case .header:
+                return Storage.storage().reference().child("HeaderImage")
+            case .html:
+                return Storage.storage().reference().child("Html")
+            }
+        }
+    }
     
-    private var htmlRef: StorageReference { storage.storage.reference(forURL: "gs://interestingnumberssud.appspot.com/Html")}
+    
     
     func uploadFile(id: String, image: Data, completion: @escaping (Result<String, Error>) -> Void) {
         let metaData = StorageMetadata()
-        metaData.contentType = "image/png"
-        productRefference.child(id).putData(image) { result in
+        metaData.contentType = "image/jpg"
+        Refferencies.product.ref.child(id).putData(image) { result in
             switch result {
             case .success(let metaData):
                 completion(.success("Upload successfully \nSize file is equal = \(metaData.size) bytes"))
@@ -32,8 +47,16 @@ class StorageService {
         }
     }
     
-    func downloadImage(id: String, completion: @escaping (Result<Data,Error>)->()) {
-        productRefference.child(id).getData(maxSize: (2*1024*1024)) { result in
+    func downloadImage(refference: Refferencies, id: String, completion: @escaping (Result<Data,Error>)->()) {
+        refference.ref.child(id)
+//            .downloadURL { result in
+//            switch result {
+//            case .success(let url):
+//                completion(.success(url))
+//            case .failure(let error):
+//                completion(.failure(error))
+//            }
+            .getData(maxSize: (2*1024*1024)) { result in
             switch result {
             case .success(let data):
                 completion(.success(data))
@@ -44,14 +67,15 @@ class StorageService {
     }
     
     func deleteImage(id: String, completion: @escaping (Error)->()) {
-        productRefference.child(id).delete { error in
+        Refferencies.product.ref.child(id).delete { error in
             guard let error else {return}
             completion(error)
         }
     }
-/*
-    func downloadFileHtml() {
-        htmlRef.listAll { result, error in
+
+    func downloadFileHtml(comletion: @escaping (URL)->Void) {
+        let fileManager = FileManagerService.instance
+        Refferencies.html.ref.listAll { result, error in
             if let error = error {
                 print(error.localizedDescription)
                 return
@@ -60,31 +84,23 @@ class StorageService {
             case .none:
                 print("none what is this")
             case .some(let result):
-                var path = result.items[0].name
-                let fullreff = self.htmlRef.child(path)
-                let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-                let localURL = documentsURL.appendingPathComponent(path)
-                let downloadTask = fullreff.write(toFile: localURL)
                 
-                self.pushFile(localURL)
+                let path = result.items[0].name
+                let fullreff = Refferencies.html.ref.child(path) //full path url to download from server
                 
-            }
-        }
-    }
-    func pushFile(_ destination: URL) {
-        var finalURL = destination.absoluteString
-        
-        DispatchQueue.main.async {
-            if let url = URL(string: finalURL) {
-                if #available(iOS 10, *){
-                    UIApplication.shared.open(url)
-                }else{
-                    UIApplication.shared.openURL(url)
+                guard let localURLpath = fileManager.getPath(name: path) else {return} //create local path url file to write on device
+                fullreff.write(toFile: localURLpath) { result in
+                    switch result {
+                    case .success(let resultUrl):
+                        print("success")
+                        comletion(resultUrl) //place where lie html file
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
                 }
                 
             }
         }
     }
- */
     
 }

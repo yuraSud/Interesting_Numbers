@@ -31,6 +31,8 @@ enum TitleConstants {
     //AuthorizedManager
     static let profileCollection = "users"
     static let productCollection = "Products"
+    static let categoriesCollection = "Categories"
+    static let headerModel = "Headers"
     
     //AddProductVC
     static let titleAddVC = " Add product to cloud storage"
