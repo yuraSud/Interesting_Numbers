@@ -14,7 +14,7 @@ class DescriptionNumberViewController: UIViewController {
     var typeRequest: TypeRequest = .oneNumber
     private let closeButton = UIButton(type: .system)
     private let discriptionView = UITextView()
-    private let numbersViewModel = RequestNumberViewModel.shared
+    private let numbersViewModel = RequestNumberViewModel()
     private var cancellable = Set<AnyCancellable>()
     
 //MARK: - life cycle:
@@ -64,20 +64,19 @@ class DescriptionNumberViewController: UIViewController {
     private func getNumberFromRequest() {
         guard !numberRequest.isEmpty else {return}
         switch typeRequest {
-        case .oneNumber:
-            numbersViewModel.fetchNumber(typeRequest: typeRequest, numberRequest)
-        case .year:
+        case .oneNumber, .year, .random:
             numbersViewModel.fetchNumber(typeRequest: typeRequest, numberRequest)
         case .range:
-            numbersViewModel.fetchRangeNumber(typeRequest: typeRequest, numberRequest)
+            numbersViewModel.fetchRangeNumber(numberRequest)
         }
     }
     
     private func subscribeToNumberModel() {
         numbersViewModel.$oneNumberDescription
-            .sink(receiveValue: { numberModel in
-                self.appendOneTextToTextView(numberRequest: self.numberRequest, textBody: numberModel?.text ?? "None")
-            }).store(in: &cancellable)
+            .sink(receiveValue: { value in
+                self.appendOneTextToTextView(numberRequest: self.numberRequest, textBody: value.text ?? "")
+            })
+            .store(in: &cancellable)
         
         numbersViewModel.$rangeNumbersDescription
             .sink(receiveValue: { dictionary in

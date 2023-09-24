@@ -10,34 +10,28 @@ import Combine
 
 class RequestNumberViewModel {
     
-    static let shared = RequestNumberViewModel()
-    private init() {}
-    let networkManager = NetworkManager()
-    
-    private let baseUrl = "http://numbersapi.com/"
-    private let endForJson = "?json"
-    private var cancellable: Set<AnyCancellable> = []
-    
-    @Published var oneNumberDescription: Future<ChooseNumbers,Error>?
+    @Published var oneNumberDescription = ChooseNumbers()
     @Published var rangeNumbersDescription: [String:String] = [:]
     
-    func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
-        var e = networkManager.fetchNumber(typeRequest: typeRequest, inputedNumbers, type: ChooseNumbers.self)
+    private let networkManager = NetworkManager()
+    private var cancellable: Set<AnyCancellable> = []
     
+    func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
+         let isMath = typeRequest == TypeRequest.random
+            
+        networkManager.fetchNumber(inputedNumbers, type: ChooseNumbers.self, mathRequest: isMath)
+            .sink(receiveValue: { value in
+                var numberDescript = value
+                numberDescript.typeRequest = typeRequest
+                self.oneNumberDescription = numberDescript
+            })
+            .store(in: &cancellable)
     }
     
-    func fetchRangeNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
-        guard let url = URL(string: baseUrl + inputedNumbers + endForJson) else { return }
-        URLSession.shared.dataTaskPublisher(for: url)
-                    .map { $0.data}
-                    .decode(type: RangeNumbers.self, decoder: JSONDecoder())
-                    .receive(on: DispatchQueue.main)
-                    .replaceError(with: RangeNumbers())
-                    .eraseToAnyPublisher()
-                    .sink(receiveValue: { value in
-                        self.rangeNumbersDescription = value
-                        
-                    }).store(in: &cancellable)
+    func fetchRangeNumber(_ inputedNumbers: String) {
+        networkManager.fetchNumber(inputedNumbers, type: RangeNumbers.self)
+            .assign(to: \.rangeNumbersDescription, on: self)
+            .store(in: &cancellable)
     }
 }
 

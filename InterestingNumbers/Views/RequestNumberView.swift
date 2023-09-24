@@ -61,7 +61,8 @@ class ChoiseNumbersView: UIView {
     @objc private func buttonTap(_ sender: UIButton) {
         buttonTag = sender.tag
         switch buttonTag {
-        case 0, 1 : typeRequest = .oneNumber
+        case 0 : typeRequest = .oneNumber
+        case 1 : typeRequest = .random
         case 2 : typeRequest = .range
         case 3 : typeRequest = .year
         default : return
@@ -74,8 +75,15 @@ class ChoiseNumbersView: UIView {
 //MARK: - private func:
     
     private func setBezierPathView() {
-        bezierPathView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(bezierPathView)
+        let viewDice = BezierPathView(frame: CGRect(x: 160, y: 150, width: 120, height: 120))
+        viewDice.rotate()
+        addSubview(viewDice)
+        let viewDice2 = BezierPathView(frame: CGRect(x: 50, y: 200, width: 120, height: 120))
+        addSubview(viewDice2)
+        
+      //  bezierPathView.translatesAutoresizingMaskIntoConstraints = false
+//        bezierPathView.frame = .init(x: 50, y: 200, width: 80, height: 80)
+//        addSubview(bezierPathView)
     }
     
     private func setTitlesLabel() {
@@ -220,11 +228,11 @@ class ChoiseNumbersView: UIView {
             titlesStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             titlesStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             
-            bezierPathView.topAnchor.constraint(equalTo: titlesStack.bottomAnchor, constant: 10),
-            bezierPathView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            bezierPathView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            bezierPathView.bottomAnchor.constraint(equalTo: buttonsStack.topAnchor, constant: -15),
-            
+//            bezierPathView.topAnchor.constraint(equalTo: titlesStack.bottomAnchor, constant: 10),
+//            bezierPathView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+//            bezierPathView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+//            bezierPathView.bottomAnchor.constraint(equalTo: buttonsStack.topAnchor, constant: -15),
+//
             buttonsStack.heightAnchor.constraint(equalToConstant: 80),
             buttonsStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             buttonsStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),

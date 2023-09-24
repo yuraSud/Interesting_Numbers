@@ -12,25 +12,25 @@ class NetworkManager {
     
     private let baseUrl = "http://numbersapi.com/"
     private let endForJson = "?json"
+    private let math = "/math"
     private var cancellable: Set<AnyCancellable> = []
     
-    func fetchNumber<T:Codable>(typeRequest: TypeRequest, _ inputedNumbers: String, type: T.Type) -> AnyPublisher<T,Error> {
-         guard let self,
-                  let url = URL(string: self.baseUrl + inputedNumbers + self.endForJson) else {
-                return promise(.failure(AuthorizeError.badUrl))
+    func fetchNumber<T:Codable>(_ numberRequest: String, type: T.Type, mathRequest: Bool = false) -> AnyPublisher<T,Never> {
+        
+        let urlMathString = baseUrl + numberRequest + math + endForJson
+        let urlString = baseUrl + numberRequest + endForJson
+        
+        let urlrequestString = mathRequest ? urlMathString : urlString
+        
+        guard let url = URL(string: urlrequestString) else {
+            return Just(T.self as! T)
+                .eraseToAnyPublisher()
             }
-            
-            URLSession.shared.dataTaskPublisher(for: url)
+            return URLSession.shared.dataTaskPublisher(for: url)
                 .map { $0.data }
-                .receive(on: DispatchQueue.main)
                 .decode(type: T.self, decoder: JSONDecoder())
-                .sink { completion in
-                    promise(.failure(completion as! Error))
-                } receiveValue: { value in
-                    var numberModel = value
-                    promise(.success(numberModel))
-                }
-                .store(in: &cancellable)
+                .receive(on: DispatchQueue.main)
+                .catch{error in Just(T.self as! T)}
+                .eraseToAnyPublisher()
         }
     }
-}
