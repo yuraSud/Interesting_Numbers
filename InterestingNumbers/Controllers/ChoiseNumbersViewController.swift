@@ -21,6 +21,8 @@ class ChoiseNumbersViewController: UIViewController {
     let authService = AuthorizationService.shared
     var cancellable = Set<AnyCancellable>()
     var user: UserProfile?
+    let userDefaults = UserDefaults.standard
+    var countRequest = 0
     
     
 //MARK: - Life Cycle:
@@ -73,10 +75,19 @@ class ChoiseNumbersViewController: UIViewController {
             let descriptionVC = DescriptionNumberViewController()
             descriptionVC.numberRequest = text
             descriptionVC.typeRequest = typeRequest
-            descriptionVC.countRequest = user?.countRequest ?? 0
+            addCountRequest()
             navigationController?.pushViewController(descriptionVC, animated: true)
         } else {
-            alertNotCorrectInput(typeRequest)
+            var title = ""
+            var message = ""
+            switch typeRequest {
+            case .range : title = "Entered an incorrect request"
+                message = "Please, enter\n number..number (like 23..45)"
+            case .year : title = "Entered an incorrect request"
+                message = "Please, enter\n month/day (like 8/25)"
+            default: break
+            }
+            presentAlert(with: title, message: message, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
     }
         
@@ -89,6 +100,7 @@ class ChoiseNumbersViewController: UIViewController {
         choiseNumbersView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.addSubview(choiseNumbersView)
+        countRequest = user?.countRequest ?? 0
     }
     
     func setupNavButton() {
@@ -137,24 +149,19 @@ class ChoiseNumbersViewController: UIViewController {
         }
     }
     
-    private func alertNotCorrectInput(_ typeRequest: TypeRequest) {
-        var alert = UIAlertController()
-        switch typeRequest {
-        case .range : alert = UIAlertController(title: "Entered an incorrect request", message: "Please, enter\n number..number (like 23..45)", preferredStyle: .alert)
-        case .year : alert = UIAlertController(title: "Entered an incorrect request", message: "Please, enter\n month/day (like 8/25)", preferredStyle: .alert)
-        default : return
+    func addCountRequest() {
+        guard let user else {return}
+        let countRequestInMemory = userDefaults.integer(forKey: user.uid)
+        if countRequest < countRequestInMemory {
+            countRequest = countRequestInMemory
         }
-        let alertActionOK = UIAlertAction(title: "Ok", style: .default) { _ in
-            self.choiseNumbersView.inputTextField.text = ""
-        }
-        alert.addAction(alertActionOK)
-        present(alert, animated: true)
+        countRequest += 1
+        userDefaults.set(countRequest, forKey: user.uid)
     }
     
     func sendCountRequestToServer() {
         guard var user else {return}
-        let userDefaults = UserDefaults.standard
-        let countRequestInMemory = userDefaults.integer(forKey: "countRequest")
+        let countRequestInMemory = userDefaults.integer(forKey: user.uid)
         if user.countRequest < countRequestInMemory {
             self.user?.countRequest = countRequestInMemory
             user.countRequest = countRequestInMemory
@@ -163,7 +170,7 @@ class ChoiseNumbersViewController: UIViewController {
                 self.presentAlert(with: error.localizedDescription, message: nil, buttonTitles: "", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
         } else {
-            userDefaults.set(user.countRequest, forKey: "countRequest")
+            userDefaults.set(user.countRequest, forKey: user.uid)
         }
     }
     

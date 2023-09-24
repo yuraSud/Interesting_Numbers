@@ -12,27 +12,18 @@ class RequestNumberViewModel {
     
     static let shared = RequestNumberViewModel()
     private init() {}
+    let networkManager = NetworkManager()
+    
     private let baseUrl = "http://numbersapi.com/"
     private let endForJson = "?json"
     private var cancellable: Set<AnyCancellable> = []
     
-    @Published var oneNumberDescription: ChooseNumbers?
+    @Published var oneNumberDescription: Future<ChooseNumbers,Error>?
     @Published var rangeNumbersDescription: [String:String] = [:]
     
     func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
-        guard let url = URL(string: baseUrl + inputedNumbers + endForJson) else { return }
-        print(url)
-        URLSession.shared.dataTaskPublisher(for: url)
-                   .map { $0.data }
-                   .decode(type: ChooseNumbers.self, decoder: JSONDecoder())
-                   .receive(on: DispatchQueue.main)
-                   .replaceError(with: ChooseNumbers(text: "yura"))
-                   .eraseToAnyPublisher()
-                   .sink(receiveValue: { value in
-                       var numberModel = value
-                       numberModel.typeRequest = typeRequest
-                       self.oneNumberDescription = numberModel
-                   }).store(in: &cancellable)
+        var e = networkManager.fetchNumber(typeRequest: typeRequest, inputedNumbers, type: ChooseNumbers.self)
+    
     }
     
     func fetchRangeNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
@@ -45,6 +36,7 @@ class RequestNumberViewModel {
                     .eraseToAnyPublisher()
                     .sink(receiveValue: { value in
                         self.rangeNumbersDescription = value
+                        
                     }).store(in: &cancellable)
     }
 }

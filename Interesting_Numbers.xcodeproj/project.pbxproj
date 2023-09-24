@@ -67,6 +67,7 @@
 		9C2C644B2ABB062A003F0B73 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 9C2C644A2ABB062A003F0B73 /* FirebaseStorageCombine-Community */; };
 		9C2C644D2ABB0D61003F0B73 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C644C2ABB0D61003F0B73 /* DatabaseService.swift */; };
 		9C2C644F2ABB1F9A003F0B73 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C644E2ABB1F9A003F0B73 /* Notification+Extension.swift */; };
+		9C7FB17B2AC042D600E38076 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7FB17A2AC042D600E38076 /* NetworkManager.swift */; };
 		9CE132332AAE3C0100527002 /* ImageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132322AAE3C0100527002 /* ImageConstants.swift */; };
 		9CE132352AAEF0F500527002 /* ChoiseNumbersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */; };
 /* End PBXBuildFile section */
@@ -124,6 +125,7 @@
 		9C2C64452ABB05C2003F0B73 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		9C2C644C2ABB0D61003F0B73 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		9C2C644E2ABB1F9A003F0B73 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
+		9C7FB17A2AC042D600E38076 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9CE132322AAE3C0100527002 /* ImageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConstants.swift; sourceTree = "<group>"; };
 		9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiseNumbersViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -283,6 +285,7 @@
 				9C2C644C2ABB0D61003F0B73 /* DatabaseService.swift */,
 				9C269FA52ABE199C00B363F1 /* DataSourceManager.swift */,
 				9C269FAE2AC001D200B363F1 /* ValidateRequestManager.swift */,
+				9C7FB17A2AC042D600E38076 /* NetworkManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -406,6 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C7FB17B2AC042D600E38076 /* NetworkManager.swift in Sources */,
 				9C269FA42ABDD16400B363F1 /* HeaderSectionModel.swift in Sources */,
 				9C269FB72AC00C8800B363F1 /* DiceView.swift in Sources */,
 				9C2C641D2AB474BC003F0B73 /* AuthorizationViewModel.swift in Sources */,
