@@ -16,6 +16,7 @@ enum AuthorizeError: String, Error {
     case notRootVC = "There is no root view controller "
     case errorToken = "ID token missing"
     case cancelAppleAuth = "Canceled Apple sign in authentication"
+    case userNotFound = "Sorry user not found" 
 }
 
 enum ModelsError: String, Error {

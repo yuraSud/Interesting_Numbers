@@ -8,6 +8,8 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
+import FirebaseCore
+import Firebase
 
 class DatabaseService {
     
@@ -15,6 +17,11 @@ class DatabaseService {
     private init() {}
     
     private let db = Firestore.firestore()
+    private var request = 0 {
+        didSet {
+            print("request = \(request)")
+        }
+    }
     
     enum FirebaseRefferencies {
         case product
@@ -29,6 +36,34 @@ class DatabaseService {
                 return Firestore.firestore().collection(TitleConstants.headerModel)
             case .profile:
                 return Firestore.firestore().collection(TitleConstants.profileCollection)
+            }
+        }
+    }
+    
+    ///Fetch users profile document from server FireStore
+    func fetchProfile(uid: String, completion: @escaping ((Result<UserProfile?,Error>)->Void)) {
+       
+        db.collection(TitleConstants.profileCollection).document(uid).getDocument {document, error in
+            self.request += 1
+            if let document = document, document.exists {
+                do {
+                    let userProfile = try document.data(as: UserProfile.self)
+                    completion(.success(userProfile))
+                } catch {
+                    completion(.failure(AuthorizeError.errorParceProfile))
+                }
+            } else {
+                completion(.failure(AuthorizeError.docNotExists))
+            }
+        }
+    }
+    
+    func documentIsExists(uid:String, completion: @escaping ((Bool)->Void)) {
+        db.collection(TitleConstants.profileCollection).document(uid).getDocument { document, _ in
+            if let document = document, document.exists {
+                completion(true)
+            } else {
+                completion(false)
             }
         }
     }
@@ -95,5 +130,14 @@ class DatabaseService {
             arrayHeaders.append(product)
         }
         return arrayHeaders
+    }
+    
+    func addCountRequest(user: UserProfile, errorHandler: ((Error?)->Void)?) {
+        let reference = db.collection(TitleConstants.profileCollection).document(user.uid)
+        do {
+            try reference.setData(from: user, merge: true)
+        } catch {
+            errorHandler?(AuthorizeError.sendDataFailed)
+        }
     }
 }

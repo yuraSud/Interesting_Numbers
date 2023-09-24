@@ -55,7 +55,7 @@ class ProfileViewController: UIViewController {
     }
     
     func fetchCurrentUser() {
-        authService.fetchProfile(uidDocument: authService.uid)
+        authService.getProfileDocuments()
         user = authService.userProfile
         guard let _ = user else {
             self.user = UserProfile(name: "?", email: "Anonymous@mail.com")
@@ -70,7 +70,7 @@ class ProfileViewController: UIViewController {
         nameUserLabel.text = "name: \(user.name)"
         emailUserLabel.text = "email: \(user.email)"
         usersImageLabel.text = user.firstLetter
-        countRequestLabel.text = "Count request: \(user.countRequest ?? 0)"
+        countRequestLabel.text = "Count request: \(user.countRequest)"
     }
     
 //MARK: - @objc Functions:

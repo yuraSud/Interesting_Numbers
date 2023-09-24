@@ -38,7 +38,7 @@ class ChoiseNumbersViewController: UIViewController {
         super.viewWillAppear(animated)
         user = authService.userProfile
         self.userButton.setTitle(self.user?.firstLetter, for: .normal)
-        
+        sendCountRequestToServer()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -73,13 +73,10 @@ class ChoiseNumbersViewController: UIViewController {
             let descriptionVC = DescriptionNumberViewController()
             descriptionVC.numberRequest = text
             descriptionVC.typeRequest = typeRequest
+            descriptionVC.countRequest = user?.countRequest ?? 0
             navigationController?.pushViewController(descriptionVC, animated: true)
         } else {
-            switch typeRequest {
-            case .range : alertNotCorrectInput(typeRequest)
-            case .year : alertNotCorrectInput(typeRequest)
-            default : return
-            }
+            alertNotCorrectInput(typeRequest)
         }
     }
         
@@ -152,6 +149,22 @@ class ChoiseNumbersViewController: UIViewController {
         }
         alert.addAction(alertActionOK)
         present(alert, animated: true)
+    }
+    
+    func sendCountRequestToServer() {
+        guard var user else {return}
+        let userDefaults = UserDefaults.standard
+        let countRequestInMemory = userDefaults.integer(forKey: "countRequest")
+        if user.countRequest < countRequestInMemory {
+            self.user?.countRequest = countRequestInMemory
+            user.countRequest = countRequestInMemory
+            DatabaseService.shared.addCountRequest(user: user) { error in
+                guard let error else {return}
+                self.presentAlert(with: error.localizedDescription, message: nil, buttonTitles: "", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+        } else {
+            userDefaults.set(user.countRequest, forKey: "countRequest")
+        }
     }
     
 //MARK: - Set Constraints:

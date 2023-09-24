@@ -6,10 +6,10 @@
 //
 
 import Foundation
-//import Firebase
+import Firebase
 import FirebaseCore
 import FirebaseFirestore
-//import FirebaseFirestoreSwift
+import FirebaseFirestoreSwift
 import Combine
 import FirebaseAuth
 import GoogleSignIn
@@ -19,16 +19,16 @@ import AuthenticationServices
 
 final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
-    var request = 0
     @Published var userProfile: UserProfile?
     @Published var sessionState: SessionState = .loggedOut
     @Published var uid = ""
     @Published var error: Error? {
         didSet {
-            print(error?.localizedDescription ?? "Not parce error")
+            print(error?.localizedDescription ?? "Not parce error", "___Error Authorization Manager")
         }
     }
     
+   // let dataBaseService = DatabaseService.shared
     var completionResultTokenApple: ((Result<SignInWithAppleResult, Error>)-> Void)?
     var complitionStringToken: ((String)->())?
     var currentNonce: String? //Apple authorization
@@ -36,41 +36,27 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     private var handle: AuthStateDidChangeListenerHandle?
     
     static let shared = AuthorizationService()
-    
-    private override init() {
-        super.init()
-    }
+    private override init() {}
     
     func setupFirebaseAuth() {
-        print("startListener")
         handle = Auth.auth().addStateDidChangeListener {[weak self] auth, user in
             guard let self = self else {return}
             self.sessionState = user == nil ? .loggedOut : .loggedIn
             guard let user = user else {return}
             self.uid = user.uid
             guard !user.isAnonymous else {return}
-            self.fetchProfile(uidDocument: self.uid) { error in
-                guard let error = error else {return}
-                self.error = error
-            }
+            self.getProfileDocuments()
         }
     }
     
-    ///Fetch users profile document from server FireStore
-    func fetchProfile(uidDocument: String, errorHandler: ((Error?)->Void)? = nil) {
-       
-        Firestore.firestore().collection(TitleConstants.profileCollection).document(uidDocument).getDocument { [weak self] document, error in
-            if let document = document, document.exists {
-                do {
-                    self?.request += 1
-                    print(self?.request ?? 0, "request")
-                    self?.userProfile = try document.data(as: UserProfile.self)
-                } catch {
-                    errorHandler?(AuthorizeError.errorParceProfile)
-                }
-            } else {
-                self?.userProfile = nil
-                errorHandler?(AuthorizeError.docNotExists)
+    func getProfileDocuments() {
+        DatabaseService.shared.fetchProfile(uid: uid) { result in
+            switch result {
+            case .success(let userProfile):
+                self.userProfile = userProfile
+            case .failure(let error):
+                self.error = error
+                self.userProfile = nil
             }
         }
     }
@@ -79,31 +65,19 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         guard let profile = profile else {return}
        
         Auth.auth().createUser(withEmail: email, password: pasword) { [weak self] result, error in
-            switch result {
-            case .none:
-                print("None in signUp in Manager")
-            case .some(let result):
-                let uid = result.user.uid
+            if let error = error {
+                errorHandler?(error)
+            } else {
+                guard let user = result?.user else {
+                    errorHandler?(AuthorizeError.userNotFound)
+                    return}
+            
+                let uid = user.uid
                 self?.uid = uid
                 DatabaseService.shared.sendProfileToServer(uid: uid, profile: profile) { error in
-                    guard let error = error else {return}
                     errorHandler?(error)
                 }
             }
-            if let error = error {
-                errorHandler?(error)
-            }
-        }
-    }
-    
-    //TODO: - переделать посылку запросов
-    func addCountRequest(countRequest: Int, errorHandler: ((Error?)->Void)?) {
-        let reference = Firestore.firestore().collection(TitleConstants.profileCollection).document(uid)
-        do {
-            userProfile?.countRequest = countRequest
-            try reference.setData(from: userProfile, merge: true)
-        } catch {
-            errorHandler?(AuthorizeError.sendDataFailed)
         }
     }
     
@@ -129,7 +103,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     func userIsAnonymously() -> Bool {
         guard let user = Auth.auth().currentUser else {return false}
-        fetchProfile(uidDocument: user.uid)
+        getProfileDocuments()
         return user.isAnonymous
     }
     
@@ -167,7 +141,6 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
                     errorHandler?(error)
                 })
                 self.logOut()
-//                vc.dismiss(animated: true)
             }
         } else {
             DatabaseService.shared.deleteProfile(uid: user.uid) { error in
@@ -226,19 +199,15 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
                 guard let result = result else {return}
                 let userId = result.user.uid
                 self.uid = userId
-                self.documentIsExists(userUID: userId) { value, error in
-                    if let error = error {
-                        print(error.localizedDescription)
-                    } else if !value {
-                        let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
+                
+                DatabaseService.shared.documentIsExists(uid: userId) { isExist in
+                    if !isExist {
+                        let userProfile = UserProfile(name: result.user.displayName ?? "None", email: result.user.email ?? "None", uid: userId )
                         DatabaseService.shared.sendProfileToServer(uid: userId, profile: userProfile) { error in
-                            guard let error else {return}
                             self.error = error
                         }
-                        self.fetchProfile(uidDocument: userId)
-                    } else {
-                        print("Document already exists")
                     }
+                    self.getProfileDocuments()
                 }
             }
         }
@@ -272,19 +241,15 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         
         let userId = result.user.uid
         self.uid = userId
-        documentIsExists(userUID: userId) { value, error in
-            if let error = error {
-                print(error.localizedDescription)
-            } else if !value {
-                let userProfile = UserProfile(name: result.user.displayName ?? "Input your name", email: result.user.email ?? "None", uid: userId )
+        
+        DatabaseService.shared.documentIsExists(uid: userId) { isExist in
+            if !isExist {
+                let userProfile = UserProfile(name: result.user.displayName ?? "None", email: result.user.email ?? "None", uid: userId )
                 DatabaseService.shared.sendProfileToServer(uid: userId, profile: userProfile) { error in
-                    guard let error else {return}
                     self.error = error
                 }
-                self.fetchProfile(uidDocument: userId)
-            } else {
-                print("Document already exists")
             }
+            self.getProfileDocuments()
         }
     }
     
@@ -325,22 +290,6 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         authorizationController.presentationContextProvider = vc
         authorizationController.performRequests()
         complitionStringToken = completion
-    }
-    
-    func documentIsExists(userUID:String, completion: @escaping ((Bool, Error? )->Void)) {
-        Firestore.firestore().collection(TitleConstants.profileCollection).document(userUID).getDocument { [weak self] document, error in
-            if let document = document, document.exists {
-                do {
-                    self?.userProfile = try document.data(as: UserProfile.self)
-                    completion(true, nil)
-                } catch {
-                    completion(false, AuthorizeError.errorParceProfile)
-                }
-            } else {
-                self?.userProfile = nil
-                completion(false, nil)
-            }
-        }
     }
 }
 

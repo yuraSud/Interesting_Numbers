@@ -12,6 +12,7 @@ class DescriptionNumberViewController: UIViewController {
     
     var numberRequest = ""
     var typeRequest: TypeRequest = .oneNumber
+    var countRequest = 0
     private let closeButton = UIButton(type: .system)
     private let discriptionView = UITextView()
     private let numbersViewModel = RequestNumberViewModel.shared
@@ -26,10 +27,12 @@ class DescriptionNumberViewController: UIViewController {
         setupNavButton()
         subscribeToNumberModel()
         getNumberFromRequest()
+        setConstraints()
     }
     
-    override func viewWillLayoutSubviews() {
-        setConstraints()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        addCountRequest()
     }
     
 //MARK: - @objc Functions:
@@ -51,6 +54,16 @@ class DescriptionNumberViewController: UIViewController {
         discriptionView.backgroundColor = .clear
         discriptionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(discriptionView)
+    }
+    
+    func addCountRequest() {
+        let userDefaults = UserDefaults.standard
+        let countRequestInMemory = userDefaults.integer(forKey: "countRequest")
+        if countRequest < countRequestInMemory {
+            countRequest = countRequestInMemory
+        }
+        countRequest += 1
+        userDefaults.set(countRequest, forKey: "countRequest")
     }
     
     private func setupNavButton() {

@@ -13,7 +13,7 @@ struct UserProfile: Codable {
     var name: String
     var email: String
     var uid: String = ""
-    var countRequest: Int?
+    var countRequest: Int = 0
     var imageId: String?
     var isUserAdmin = false
     

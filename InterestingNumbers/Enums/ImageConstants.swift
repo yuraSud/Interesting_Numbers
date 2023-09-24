@@ -24,7 +24,7 @@ enum ImageConstants {
     static let emailBusy = UIImage(systemName: "person.crop.circle.fill.badge.xmark")
     
     //ChoiseNumberVC
-    static let rightBarButton = UIImage(systemName: "staroflife.fill")
+    static let rightBarButton = UIImage(systemName: "platter.2.filled.ipad")
     
     //AddProductVC
     static let addImage = UIImage(named: "image")
