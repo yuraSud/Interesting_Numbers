@@ -13,24 +13,25 @@ class NetworkManager {
     private let baseUrl = "http://numbersapi.com/"
     private let endForJson = "?json"
     private let math = "/math"
-    private var cancellable: Set<AnyCancellable> = []
     
-    func fetchNumber<T:Codable>(_ numberRequest: String, type: T.Type, mathRequest: Bool = false) -> AnyPublisher<T,Never> {
+    func fetchNumber<T:Codable>(_ numberRequest: String, type: T.Type, mathRequest: Bool = false) -> AnyPublisher<T,Error> {
         
         let urlMathString = baseUrl + numberRequest + math + endForJson
         let urlString = baseUrl + numberRequest + endForJson
         
-        let urlrequestString = mathRequest ? urlMathString : urlString
+        let urlRequestString = mathRequest ? urlMathString : urlString
         
-        guard let url = URL(string: urlrequestString) else {
-            return Just(T.self as! T)
+        guard let url = URL(string: urlRequestString) else {
+            return Fail(error: URLError(.badURL))
                 .eraseToAnyPublisher()
             }
             return URLSession.shared.dataTaskPublisher(for: url)
                 .map { $0.data }
                 .decode(type: T.self, decoder: JSONDecoder())
                 .receive(on: DispatchQueue.main)
-                .catch{error in Just(T.self as! T)}
+                .mapError { error in
+                    return error
+                }
                 .eraseToAnyPublisher()
         }
     }

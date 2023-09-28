@@ -8,6 +8,7 @@
 import UIKit
 
 enum ImageConstants {
+    //EnterVC
     static let dice = UIImage(named: "dice")
     static let bigDice = UIImage(named: "whiteDice")
     static let background = UIImage(named: "background")

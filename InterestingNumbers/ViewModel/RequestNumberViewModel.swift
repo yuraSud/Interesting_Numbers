@@ -13,24 +13,39 @@ class RequestNumberViewModel {
     @Published var oneNumberDescription = ChooseNumbers()
     @Published var rangeNumbersDescription: [String:String] = [:]
     
+    
     private let networkManager = NetworkManager()
     private var cancellable: Set<AnyCancellable> = []
     
-    func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String) {
+    func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String, completionError: @escaping (Error)->()) {
          let isMath = typeRequest == TypeRequest.random
             
         networkManager.fetchNumber(inputedNumbers, type: ChooseNumbers.self, mathRequest: isMath)
-            .sink(receiveValue: { value in
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    completionError(error)
+                case .finished: break
+                }
+            } receiveValue: { value in
                 var numberDescript = value
                 numberDescript.typeRequest = typeRequest
                 self.oneNumberDescription = numberDescript
-            })
+            }
             .store(in: &cancellable)
     }
     
-    func fetchRangeNumber(_ inputedNumbers: String) {
+    func fetchRangeNumber(_ inputedNumbers: String, completionError: @escaping (Error)->()) {
         networkManager.fetchNumber(inputedNumbers, type: RangeNumbers.self)
-            .assign(to: \.rangeNumbersDescription, on: self)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    completionError(error)
+                case .finished: break
+                }
+            }, receiveValue: { value in
+                self.rangeNumbersDescription = value
+            })
             .store(in: &cancellable)
     }
 }

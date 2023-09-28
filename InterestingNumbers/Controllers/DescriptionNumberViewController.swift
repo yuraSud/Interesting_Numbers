@@ -65,9 +65,13 @@ class DescriptionNumberViewController: UIViewController {
         guard !numberRequest.isEmpty else {return}
         switch typeRequest {
         case .oneNumber, .year, .random:
-            numbersViewModel.fetchNumber(typeRequest: typeRequest, numberRequest)
+            numbersViewModel.fetchNumber(typeRequest: typeRequest, numberRequest) { error in
+                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
         case .range:
-            numbersViewModel.fetchRangeNumber(numberRequest)
+            numbersViewModel.fetchRangeNumber(numberRequest) { error in
+                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
         }
     }
     

@@ -111,7 +111,7 @@ class AuthorisedView: UIView {
     private func setFogetPasswordButton() {
         addSubview(forgetButton)
         forgetButton.translatesAutoresizingMaskIntoConstraints = false
-        forgetButton.setTitle(TitleConstants.forgetButton, for: .normal)
+        forgetButton.setTitle(TitleConstants.forgotButton, for: .normal)
         forgetButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
         NSLayoutConstraint.activate([
             forgetButton.trailingAnchor.constraint(equalTo: authorizedStack.trailingAnchor),

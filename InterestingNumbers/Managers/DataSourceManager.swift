@@ -10,11 +10,10 @@ import Foundation
 struct DataSourceManager {
     var headerArray: [HeaderSectionModel] = []
    
-    
     mutating func createDataSourceHeaderAndSections(products: [ProductModel], headers: [HeaderSectionModel], completion: (Error)->Void) -> [[ProductModel]] {
         print("Begin create DataSource")
         guard !products.isEmpty && !headers.isEmpty else {
-            completion(ModelsError.productHeaderIsEmpty)
+            completion(StoreErrors.productHeaderIsEmpty)
             return [] }
         
         var favouriteArrayProducts: [ProductModel] = []
@@ -34,7 +33,7 @@ struct DataSourceManager {
         }
         
         guard !sections.isEmpty else {
-            completion(ModelsError.sectionsArrayIsEmpty)
+            completion(StoreErrors.sectionsArrayIsEmpty)
             return [] }
         
         sections.removeFirst()

@@ -15,8 +15,6 @@ import FirebaseAuth
 import GoogleSignIn
 import AuthenticationServices
 
-
-
 final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     @Published var userProfile: UserProfile?
@@ -28,11 +26,11 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         }
     }
     
-   // let dataBaseService = DatabaseService.shared
     var completionResultTokenApple: ((Result<SignInWithAppleResult, Error>)-> Void)?
-    var complitionStringToken: ((String)->())?
-    var currentNonce: String? //Apple authorization
-    var cancellables = Set<AnyCancellable>()
+    var completionStringToken: ((String)->())?
+    
+    private var currentNonce: String? //Apple authorization string
+    private var cancellables = Set<AnyCancellable>()
     private var handle: AuthStateDidChangeListenerHandle?
     
     static let shared = AuthorizationService()
@@ -62,7 +60,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     }
     
     func signUp(_ email: String, _ pasword: String, profile: UserProfile?, errorHandler: ((Error?)->Void)?) {
-        guard let profile = profile else {return}
+        guard var profile = profile else {return}
        
         Auth.auth().createUser(withEmail: email, password: pasword) { [weak self] result, error in
             if let error = error {
@@ -74,6 +72,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
             
                 let uid = user.uid
                 self?.uid = uid
+                profile.uid = uid
                 DatabaseService.shared.sendProfileToServer(uid: uid, profile: profile) { error in
                     errorHandler?(error)
                 }
@@ -131,34 +130,20 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         if user.providerData.first?.providerID == "apple.com" {
             deleteCurrentAppleUser(vc: vc) { tokenString in
                 Auth.auth().revokeToken(withAuthorizationCode: tokenString) { error in
-                    print(error?.localizedDescription ?? "nilllll")
-                }
-                DatabaseService.shared.deleteProfile(uid: user.uid) { error in
                     errorHandler?(error)
                 }
-                user.delete(completion: { error in
-                    guard let error else {return}
-                    errorHandler?(error)
-                })
-                self.logOut()
             }
-        } else {
-            DatabaseService.shared.deleteProfile(uid: user.uid) { error in
-                errorHandler?(error)
-            }
-            user.delete(completion: { error in
-                guard let error else {return}
-                errorHandler?(error)
-            })
-            logOut()
         }
+        DatabaseService.shared.deleteProfile(uid: user.uid) { errorHandler?($0) }
+        user.delete(completion: { errorHandler?($0) })
+        logOut()
     }
     
     ///Check your email - Is already exists.
     func checkEmailIsBusy(email: String, isBusyHandler: ((Bool)->())? = nil) {
         Auth.auth().fetchSignInMethods(forEmail: email) { arrString, error in
             if let error = error {
-                print(error.localizedDescription)
+                self.error = error
                 isBusyHandler?(false)
             } else if let arrString = arrString {
                 isBusyHandler?(!arrString.isEmpty)
@@ -224,7 +209,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
             completionResultTokenApple?(.failure(AuthorizeError.errorToken))
             return
         }
-        complitionStringToken?(idTokenString)
+        completionStringToken?(idTokenString)
         let token = SignInWithAppleResult(token: idTokenString, nonce: nonce)
         completionResultTokenApple?(.success(token))
         }
@@ -289,7 +274,7 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = vc
         authorizationController.performRequests()
-        complitionStringToken = completion
+        completionStringToken = completion
     }
 }
 

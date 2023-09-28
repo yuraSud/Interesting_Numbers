@@ -2,11 +2,10 @@
 //  UserProfile.swift
 //  Interesting_Numbers
 //
-//  Created by Olga Sabadina on 13.09.2023.
+//  Created by Yura Sabadin on 13.09.2023.
 //
 
 import Foundation
-
 
 struct UserProfile: Codable {
     

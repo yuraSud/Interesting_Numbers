@@ -25,7 +25,6 @@
 		20D372542AADA9E00095041A /* EnterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20D372532AADA9E00095041A /* EnterViewController.swift */; };
 		9C269F9E2ABD9C2600B363F1 /* FileManagerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C269F9D2ABD9C2600B363F1 /* FileManagerService.swift */; };
 		9C269FA02ABDA45B00B363F1 /* webView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C269F9F2ABDA45B00B363F1 /* webView.swift */; };
-		9C269FA22ABDD04100B363F1 /* CategoriesProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C269FA12ABDD04100B363F1 /* CategoriesProduct.swift */; };
 		9C269FA42ABDD16400B363F1 /* HeaderSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C269FA32ABDD16400B363F1 /* HeaderSectionModel.swift */; };
 		9C269FA62ABE199C00B363F1 /* DataSourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C269FA52ABE199C00B363F1 /* DataSourceManager.swift */; };
 		9C269FA92ABECDCC00B363F1 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 9C269FA82ABECDCC00B363F1 /* SDWebImage */; };
@@ -69,6 +68,7 @@
 		9C2C644F2ABB1F9A003F0B73 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C644E2ABB1F9A003F0B73 /* Notification+Extension.swift */; };
 		9C7FB17B2AC042D600E38076 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7FB17A2AC042D600E38076 /* NetworkManager.swift */; };
 		9C7FB17D2AC4981E00E38076 /* BezierDiceFive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7FB17C2AC4981E00E38076 /* BezierDiceFive.swift */; };
+		9C7FB17F2AC56F5800E38076 /* StoreErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C7FB17E2AC56F5800E38076 /* StoreErrors.swift */; };
 		9CE132332AAE3C0100527002 /* ImageConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132322AAE3C0100527002 /* ImageConstants.swift */; };
 		9CE132352AAEF0F500527002 /* ChoiseNumbersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */; };
 /* End PBXBuildFile section */
@@ -87,7 +87,6 @@
 		20D372532AADA9E00095041A /* EnterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterViewController.swift; sourceTree = "<group>"; };
 		9C269F9D2ABD9C2600B363F1 /* FileManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerService.swift; sourceTree = "<group>"; };
 		9C269F9F2ABDA45B00B363F1 /* webView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webView.swift; sourceTree = "<group>"; };
-		9C269FA12ABDD04100B363F1 /* CategoriesProduct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesProduct.swift; sourceTree = "<group>"; };
 		9C269FA32ABDD16400B363F1 /* HeaderSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderSectionModel.swift; sourceTree = "<group>"; };
 		9C269FA52ABE199C00B363F1 /* DataSourceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceManager.swift; sourceTree = "<group>"; };
 		9C269FAA2AC000F400B363F1 /* FontsEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontsEnum.swift; sourceTree = "<group>"; };
@@ -128,6 +127,7 @@
 		9C2C644E2ABB1F9A003F0B73 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		9C7FB17A2AC042D600E38076 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9C7FB17C2AC4981E00E38076 /* BezierDiceFive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BezierDiceFive.swift; sourceTree = "<group>"; };
+		9C7FB17E2AC56F5800E38076 /* StoreErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreErrors.swift; sourceTree = "<group>"; };
 		9CE132322AAE3C0100527002 /* ImageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConstants.swift; sourceTree = "<group>"; };
 		9CE132342AAEF0F500527002 /* ChoiseNumbersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiseNumbersViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -161,7 +161,6 @@
 				9C2C64252AB8B20C003F0B73 /* SignInWithAppleResult.swift */,
 				9C2C64342AB9B7F5003F0B73 /* NumbersModel.swift */,
 				9C2C64432ABADDEE003F0B73 /* ProductModel.swift */,
-				9C269FA12ABDD04100B363F1 /* CategoriesProduct.swift */,
 				9C269FA32ABDD16400B363F1 /* HeaderSectionModel.swift */,
 			);
 			path = Model;
@@ -249,6 +248,7 @@
 				9C2C640C2AB3028A003F0B73 /* SessionState.swift */,
 				9C269FAA2AC000F400B363F1 /* FontsEnum.swift */,
 				9C2C64112AB30A94003F0B73 /* AuthorizeError.swift */,
+				9C7FB17E2AC56F5800E38076 /* StoreErrors.swift */,
 				9C2C64412ABADC1A003F0B73 /* TypeRequest.swift */,
 			);
 			path = Enums;
@@ -430,7 +430,6 @@
 				20D372542AADA9E00095041A /* EnterViewController.swift in Sources */,
 				9C7FB17D2AC4981E00E38076 /* BezierDiceFive.swift in Sources */,
 				9C2C641F2AB7298C003F0B73 /* String+Extension.swift in Sources */,
-				9C269FA22ABDD04100B363F1 /* CategoriesProduct.swift in Sources */,
 				9C269FAB2AC000F400B363F1 /* FontsEnum.swift in Sources */,
 				9C2C640D2AB3028A003F0B73 /* SessionState.swift in Sources */,
 				9C2C64332AB9979C003F0B73 /* AddProductsViewController.swift in Sources */,
@@ -450,6 +449,7 @@
 				9C2C64462ABB05C2003F0B73 /* StorageService.swift in Sources */,
 				9C2C641B2AB4376A003F0B73 /* ProfileViewController.swift in Sources */,
 				20D3724C2AAC68E50095041A /* AuthorisedView.swift in Sources */,
+				9C7FB17F2AC56F5800E38076 /* StoreErrors.swift in Sources */,
 				20D372342AAC63450095041A /* AppDelegate.swift in Sources */,
 				9C2C640B2AB301B4003F0B73 /* AuthorizationService.swift in Sources */,
 				20D372362AAC63450095041A /* SceneDelegate.swift in Sources */,

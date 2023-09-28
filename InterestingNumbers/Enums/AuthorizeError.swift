@@ -19,8 +19,3 @@ enum AuthorizeError: String, Error {
     case userNotFound = "Sorry user not found"
     case badUrl = "Bad url"
 }
-
-enum ModelsError: String, Error {
-    case productHeaderIsEmpty = "Products array or Headers array is empty!"
-    case sectionsArrayIsEmpty = "Data Source array is empty!"
-}

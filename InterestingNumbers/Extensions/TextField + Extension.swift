@@ -128,24 +128,6 @@ class UITextFieldPadding: UITextField {
         }
     }
     
-    func setupRightStack() {
-        let rightView = UIView(frame: CGRect(x: 0, y: 15, width: 65, height: 25))
-        rightStack.frame = .init(x: 0, y: 0, width: 55, height: 25)
-        rightStack.tintColor = .gray
-        rightStack.spacing = 5
-        rightStack.distribution = .fillEqually
-        rightView.addSubview(rightStack)
-        self.rightView = rightView
-        self.rightViewMode = .whileEditing
-        
-        clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
-        clearButton.setImage(ImageConstants.clearText, for: .normal)
-        clearButton.widthAnchor.constraint(equalTo: clearButton.heightAnchor).isActive = true
-        eyeButton.setImage(ImageConstants.closeEye, for: .normal)
-        eyeButton.addTarget(self, action: #selector(changeSequreText), for: .touchUpInside)
-        eyeButton.widthAnchor.constraint(equalTo: eyeButton.heightAnchor).isActive = true
-    }
-    
     func addEmailImageAndClearButton() {
         rightStack.addArrangedSubview(emailImage)
         rightStack.addArrangedSubview(clearButton)
@@ -179,9 +161,25 @@ class UITextFieldPadding: UITextField {
         eyeButton.setImage(imageButtonSequre, for: .normal)
         self.isSecureTextEntry = isSequreText
     }
+    
+    private func setupRightStack() {
+         let rightView = UIView(frame: CGRect(x: 0, y: 15, width: 65, height: 25))
+         rightStack.frame = .init(x: 0, y: 0, width: 55, height: 25)
+         rightStack.tintColor = .gray
+         rightStack.spacing = 5
+         rightStack.distribution = .fillEqually
+         rightView.addSubview(rightStack)
+         self.rightView = rightView
+         self.rightViewMode = .whileEditing
+         
+         clearButton.addTarget(self, action: #selector(clearText), for: .touchUpInside)
+         clearButton.setImage(ImageConstants.clearText, for: .normal)
+         clearButton.widthAnchor.constraint(equalTo: clearButton.heightAnchor).isActive = true
+         eyeButton.setImage(ImageConstants.closeEye, for: .normal)
+         eyeButton.addTarget(self, action: #selector(changeSequreText), for: .touchUpInside)
+         eyeButton.widthAnchor.constraint(equalTo: eyeButton.heightAnchor).isActive = true
+     }
 }
-
-
 
 extension UITextField {
     

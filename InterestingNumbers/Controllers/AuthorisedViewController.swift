@@ -79,7 +79,6 @@ class AuthorisedViewController: UIViewController {
               let password = authoriseView.passwordTextField.text
         else {return}
         let user = UserProfile(name: authoriseView.nameTextField.text?.returnFirstLetterUppercase ?? "Bot", email: email)
-       // authService.userProfile = man
         
         if sender.tag == 0 {
             authoriseView.animating.startAnimating()

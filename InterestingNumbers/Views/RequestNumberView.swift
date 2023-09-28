@@ -147,11 +147,9 @@ class ChoiseNumbersView: UIView {
                               tintColor: .label)
 
         button.setShadow(color: .systemGray2,
-                         offsetWidh: 1,
-                         offseHeight: 4,
+                         shadowOffset: .init(width: 1, height: 1),
                          opacity: 1,
                          radius: 4,
-                         masksToBounds: false,
                          cornerRadius: 5)
     }
     

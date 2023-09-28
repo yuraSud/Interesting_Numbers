@@ -38,5 +38,4 @@ final class SignInAppleIDHelper {
         
         return hashString
     }
-    
 }

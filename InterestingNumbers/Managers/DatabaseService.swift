@@ -17,11 +17,7 @@ class DatabaseService {
     private init() {}
     
     private let db = Firestore.firestore()
-    private var request = 0 {
-        didSet {
-            print("request = \(request)")
-        }
-    }
+    private var request = 0
     
     enum FirebaseRefferencies {
         case product
@@ -70,7 +66,6 @@ class DatabaseService {
     
     func deleteProfile(uid: String, errorHandler: ((Error?)->Void)? ) {
         FirebaseRefferencies.profile.ref.document(uid).delete { error in
-            guard let error else {return}
             errorHandler?(error)
         }
     }
@@ -106,6 +101,7 @@ class DatabaseService {
     
     func sendProfileToServer(uid: String, profile: UserProfile, errorHandler: ((Error?)->Void)?) {
         do {
+            
             try FirebaseRefferencies.profile.ref.document(uid).setData(from: profile, merge: true)
         } catch {
             errorHandler?(AuthorizeError.sendDataFailed)

@@ -1,8 +1,8 @@
 //
 //  UIView+Extension.swift
-//  InterestingNumbers
+//  Interesting_Numbers
 //
-//  Created by Olga Sabadina on 09.09.2023.
+//  Created by Yura Sabadin on 09.09.2023.
 //
 
 import UIKit
@@ -26,12 +26,12 @@ extension UIView {
         layer.shadowRadius = shadowRadius
     }
     
-    func setShadow(color: UIColor, offsetWidh: Int, offseHeight: Int, opacity: Float, radius: CGFloat, masksToBounds: Bool, cornerRadius: CGFloat ) {
+    func setShadow(color: UIColor, shadowOffset: CGSize, opacity: Float, radius: CGFloat, cornerRadius: CGFloat ) {
         layer.shadowColor = color.cgColor
-        layer.shadowOffset = CGSize(width: offsetWidh, height: offseHeight)
+        layer.shadowOffset = shadowOffset
         layer.shadowOpacity = opacity
         layer.shadowRadius = radius
-        layer.masksToBounds = masksToBounds
+        layer.masksToBounds = true
         layer.cornerRadius = cornerRadius
     }
 }

@@ -2,7 +2,7 @@
 //  TitleConstants.swift
 //  InterestingNumbers
 //
-//  Created by Olga Sabadina on 09.09.2023.
+//  Created by Yura Sabadin on 09.09.2023.
 //
 
 import Foundation
@@ -18,14 +18,14 @@ enum TitleConstants {
     static let signInLabel = "I already have an account"
     
     
-    //AythorizedVC
+    //AuthorizedVC
     static let titleLabel = "Interesting Numbers"
     static let descriptionLabel = "This app about fucts of Numbers \n and Dates"
     static let name = " Enter your name"
     static let email = " Enter your email"
     static let password = " Enter your password"
     static let emailBusy = "This email already exists"
-    static let forgetButton = "Forgot Password?"
+    static let forgotButton = "Forgot Password?"
     static let registerButton = "Register"
     
     //AuthorizedManager
