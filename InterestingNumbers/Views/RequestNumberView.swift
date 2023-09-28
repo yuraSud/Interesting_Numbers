@@ -14,7 +14,8 @@ class ChoiseNumbersView: UIView {
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let enterLabel = UILabel()
-    private let bezierPathView = BezierPathView()
+    private var bezierDiceOne = BezierDiceFive()
+    private var bezierDiceFive = BezierDiceFive()
     private let validateManager = ValidateManager()
     private var buttonTag = 0
     private var buttonsStack = UIStackView()
@@ -75,15 +76,11 @@ class ChoiseNumbersView: UIView {
 //MARK: - private func:
     
     private func setBezierPathView() {
-        let viewDice = BezierPathView(frame: CGRect(x: 160, y: 150, width: 120, height: 120))
-        viewDice.rotate()
-        addSubview(viewDice)
-        let viewDice2 = BezierPathView(frame: CGRect(x: 50, y: 200, width: 120, height: 120))
-        addSubview(viewDice2)
-        
-      //  bezierPathView.translatesAutoresizingMaskIntoConstraints = false
-//        bezierPathView.frame = .init(x: 50, y: 200, width: 80, height: 80)
-//        addSubview(bezierPathView)
+        bezierDiceOne = BezierDiceFive(frame: CGRect(x: 170, y: 230, width: 120, height: 120))
+        addSubview(bezierDiceOne)
+        bezierDiceFive = BezierDiceFive(frame: CGRect(x: 50, y: 230, width: 120, height: 120))
+        bezierDiceFive.rotate()
+        addSubview(bezierDiceFive)
     }
     
     private func setTitlesLabel() {
@@ -123,6 +120,8 @@ class ChoiseNumbersView: UIView {
         button.backgroundColor = .customColor
         button.layer.shadowOpacity = 0
         setPlacholder(button)
+        bezierDiceOne.setNeedsDisplay()
+        bezierDiceFive.setNeedsDisplay()
     }
     
     private func setPlacholder (_ button: UIButton) {
@@ -228,11 +227,6 @@ class ChoiseNumbersView: UIView {
             titlesStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             titlesStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             
-//            bezierPathView.topAnchor.constraint(equalTo: titlesStack.bottomAnchor, constant: 10),
-//            bezierPathView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-//            bezierPathView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-//            bezierPathView.bottomAnchor.constraint(equalTo: buttonsStack.topAnchor, constant: -15),
-//
             buttonsStack.heightAnchor.constraint(equalToConstant: 80),
             buttonsStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             buttonsStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
