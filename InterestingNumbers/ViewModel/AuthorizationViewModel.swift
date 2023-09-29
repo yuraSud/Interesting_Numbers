@@ -48,7 +48,9 @@ final class AuthorizationViewModel {
             .removeDuplicates()
             .filter{!$0.isEmpty && $0.contains("@") && $0.contains(".")}
             .sink { email in
-                self.authManager.checkEmailIsBusy(email: email) { self.isBusyEmail = $0 }
+                self.authManager.checkEmailIsBusy(email: email) { self.isBusyEmail = $0
+                    print(self.isBusyEmail , "isBusy email")
+                }
             }.store(in: &cancellable)
     }
 }

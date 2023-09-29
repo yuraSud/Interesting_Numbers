@@ -67,8 +67,8 @@ class StoreViewController: UIViewController {
 //MARK: - Private Function:
     private func setupNavButton() {
         let addProduct = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
-        let downloadHtml = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(downloadHtml))
-        let openHtml = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(openHtml))
+//        let downloadHtml = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(downloadHtml))
+//        let openHtml = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(openHtml))
         let buttonSet = isUserAdmin ? [addProduct/*, downloadHtml, openHtml*/] : [/*downloadHtml,openHtml*/]
         navigationItem.setRightBarButtonItems(buttonSet, animated: false)
     }

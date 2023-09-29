@@ -11,7 +11,7 @@ struct DataSourceManager {
     var headerArray: [HeaderSectionModel] = []
    
     mutating func createDataSourceHeaderAndSections(products: [ProductModel], headers: [HeaderSectionModel], completion: (Error)->Void) -> [[ProductModel]] {
-        print("Begin create DataSource")
+
         guard !products.isEmpty && !headers.isEmpty else {
             completion(StoreErrors.productHeaderIsEmpty)
             return [] }
@@ -35,9 +35,19 @@ struct DataSourceManager {
         guard !sections.isEmpty else {
             completion(StoreErrors.sectionsArrayIsEmpty)
             return [] }
-        
+
         sections.removeFirst()
         sections.insert(favouriteArrayProducts, at: 0)
+        var arrayIndexToDeleteHeaders: [Int] = []
+        
+        sections.enumerated().forEach { index,value in
+            if value.isEmpty {
+                arrayIndexToDeleteHeaders.append(index)
+            }
+        }
+        let indexSet = IndexSet(arrayIndexToDeleteHeaders)
+        self.headerArray.remove(atOffsets: indexSet)
+        sections.removeAll { $0.isEmpty}
         return sections
     }
 }

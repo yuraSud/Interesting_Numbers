@@ -42,6 +42,7 @@ final class AuthorisedView: UIView {
         setAuthorizedStack()
         configureLoginButton()
         registerKeyboard()
+        setFogetPasswordButton()
         setConstraint()
     }
     
@@ -53,8 +54,6 @@ final class AuthorisedView: UIView {
         removeKeyboardObserver()
         animating.stopAnimating()
     }
-    
-    //MARK: - Func:
     
     //MARK: - @objc private func:
     
@@ -100,7 +99,7 @@ final class AuthorisedView: UIView {
         
         if isHaveAccount {
             nameTextField.isHidden = true
-            setFogetPasswordButton()
+            forgetButton.isHidden = false
         } else {
             nameTextField.isHidden = false
             forgetButton.isHidden = true

@@ -26,6 +26,7 @@ final class HeaderCollection: UICollectionViewCell {
         super .init(frame: frame)
         setStackView()
         setConstraint()
+      //  backgroundColor = .blue
     }
     
     required init?(coder: NSCoder) {
