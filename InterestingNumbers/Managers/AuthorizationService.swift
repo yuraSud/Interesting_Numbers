@@ -4,15 +4,12 @@
 //
 //  Created by Yura Sabadin on 14.09.2023.
 //
-
+import Foundation
 import FirebaseCore
 import Combine
 import FirebaseAuth
 import GoogleSignIn
 import AuthenticationServices
-import Firebase
-import FirebaseFirestore
-
 
 final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
@@ -138,35 +135,16 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     ///Check your email - Is already exists.
     func checkEmailIsBusy(email: String, isBusyHandler: ((Bool)->())? = nil) {
-        print(email, "request email")
-        Auth.auth().fetchSignInMethods(forEmail: email) { (methods, error) in
+        Auth.auth().fetchSignInMethods(forEmail: email) { arrString, error in
             if let error = error {
-                // An error occurred while checking the email existence
-                print("Error checking email existence: \(error.localizedDescription)")
+                self.error = error
                 isBusyHandler?(false)
-            } else if let methods = methods {
-                // If methods is empty, there is no user with this email
-                if methods.isEmpty {
-                    print("No user with this email exists.")
-                    isBusyHandler?(false)
-                } else {
-                    print("A user with this email already exists.")
-                    isBusyHandler?(true)
-                }
+            } else if let arrString = arrString {
+                isBusyHandler?(!arrString.isEmpty)
+            } else {
+                isBusyHandler?(false)
             }
         }
-
-//        Auth.auth().fetchSignInMethods(forEmail: email) { arrString, error in
-//           print(arrString)
-//            if let error = error {
-//                self.error = error
-//                isBusyHandler?(false)
-//            } else if let arrString = arrString {
-//                isBusyHandler?(!arrString.isEmpty)
-//            } else {
-//                isBusyHandler?(false)
-//            }
-//        }
     }
     
 //MARK: - Google Sign up
