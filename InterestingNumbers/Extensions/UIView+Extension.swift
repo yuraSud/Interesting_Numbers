@@ -31,7 +31,7 @@ extension UIView {
         layer.shadowOffset = shadowOffset
         layer.shadowOpacity = opacity
         layer.shadowRadius = radius
-        layer.masksToBounds = true
+        layer.masksToBounds = false
         layer.cornerRadius = cornerRadius
     }
 }

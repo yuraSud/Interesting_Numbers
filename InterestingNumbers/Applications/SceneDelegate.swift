@@ -8,6 +8,8 @@
 import UIKit
 import FirebaseCore
 import Combine
+import Firebase
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
