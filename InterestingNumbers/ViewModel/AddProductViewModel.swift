@@ -5,24 +5,23 @@
 //  Created by Yura Sabadin on 19.09.2023.
 //
 
-import Foundation
 import Combine
 import UIKit
 
-class AddProductViewModel {
+final class AddProductViewModel {
     
     @Published var name: String = ""
     @Published var cost: String = ""
     @Published var category: String = ""
     @Published var image: UIImage?
-    var error: String? {
+   
+    private var cancellable = Set<AnyCancellable>()
+    private var error: String? {
         didSet {
             guard let error else {return}
             postErrorMassedge(textError: error)
         }
     }
-    
-    var cancellable = Set<AnyCancellable>()
     
     var addIsEnable: AnyPublisher<Bool,Never> {
         return Publishers.CombineLatest3($name, $cost, $image)
@@ -41,6 +40,7 @@ class AddProductViewModel {
             return
         }
         let product = ProductModel(nameProduct: name, cost: cost, id: UUID().uuidString, category: category)
+       
         DatabaseService.shared.addProduct(product: product, image: imageData) { result in
             switch result {
             case .success(let sizeInfo):

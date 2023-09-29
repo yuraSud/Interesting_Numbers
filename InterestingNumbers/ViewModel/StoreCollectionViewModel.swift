@@ -7,24 +7,24 @@
 import Combine
 import Foundation
 
-class StoreCollectionViewModel {
+final class StoreCollectionViewModel {
     
     @Published var products: [ProductModel] = []
     @Published var headers: [HeaderSectionModel] = []
     @Published var sectionsData: [[ProductModel]] = []
     @Published var error: Error?
     
-    let dataBase = DatabaseService.shared
-    let storageService = StorageService.shared
-    var dataSourceManager = DataSourceManager()
-    var subscribers = Set<AnyCancellable>()
+    private let dataBase = DatabaseService.shared
+    private let storageService = StorageService.shared
+    private var dataSourceManager = DataSourceManager()
+    private var subscribers = Set<AnyCancellable>()
     var url: URL?
     
     init() {
         sinkToCreateData()
     }
     
-    func sinkToCreateData() {
+    private func sinkToCreateData() {
         $products
             .filter{!$0.isEmpty }
             .sink { product in
@@ -37,7 +37,6 @@ class StoreCollectionViewModel {
     }
     
     func refreshDataFromInternet() {
-        print("refresh headers and products")
         getHeaders()
         getProducts()
     }
@@ -50,7 +49,13 @@ class StoreCollectionViewModel {
         return sectionsData[section].count
     }
     
-    func getProducts() {
+    func getAllHtml() {
+        storageService.downloadFileHtml { url in
+            self.url = url
+        }
+    }
+    
+    private func getProducts() {
         Task {
             do {
                 products = try await dataBase.getAllProducts()
@@ -60,19 +65,13 @@ class StoreCollectionViewModel {
         }
     }
     
-    func getHeaders() {
+    private func getHeaders() {
         Task {
             do {
                 headers = try await dataBase.getAllHeaders()
             } catch let err {
                 error = err
             }
-        }
-    }
-    
-    func getAllHtml() {
-        storageService.downloadFileHtml { url in
-            self.url = url
         }
     }
 }

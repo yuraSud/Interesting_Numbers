@@ -5,11 +5,7 @@
 //  Created by Yura Sabadin on 14.09.2023.
 //
 
-import Foundation
-import Firebase
 import FirebaseCore
-import FirebaseFirestore
-import FirebaseFirestoreSwift
 import Combine
 import FirebaseAuth
 import GoogleSignIn
@@ -19,13 +15,9 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     @Published var userProfile: UserProfile?
     @Published var sessionState: SessionState = .loggedOut
-    @Published var uid = ""
-    @Published var error: Error? {
-        didSet {
-            print(error?.localizedDescription ?? "Not parce error", "___Error Authorization Manager")
-        }
-    }
+    @Published var error: Error?
     
+    var uid = ""
     var completionResultTokenApple: ((Result<SignInWithAppleResult, Error>)-> Void)?
     var completionStringToken: ((String)->())?
     
@@ -102,7 +94,9 @@ final class AuthorizationService: NSObject, ASAuthorizationControllerDelegate {
     
     func userIsAnonymously() -> Bool {
         guard let user = Auth.auth().currentUser else {return false}
-        getProfileDocuments()
+        if !user.isAnonymous {
+            getProfileDocuments()
+        }
         return user.isAnonymous
     }
     

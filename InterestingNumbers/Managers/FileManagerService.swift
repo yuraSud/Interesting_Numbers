@@ -7,7 +7,7 @@
 
 import Foundation
 
-class FileManagerService {
+final class FileManagerService {
     
     static let instance = FileManagerService()
     let fileManager = FileManager.default

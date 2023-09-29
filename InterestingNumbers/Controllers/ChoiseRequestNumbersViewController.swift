@@ -1,32 +1,30 @@
 //
-//  ChoiseNumbersViewController.swift
+//  ChoiseRequestNumbersViewController.swift
 //  InterestingNumbers
 //
 //  Created by Yura Sabadin on 11.09.2023.
 //
 
 import UIKit
-
 import Combine
 
-
-class ChoiseNumbersViewController: UIViewController {
+class ChoiseRequestNumbersViewController: UIViewController {
     
-    let nameLabel = UILabel()
-    let userButton = UIButton(type: .system)
-    let storeButton = UIButton(type: .system)
+    private let nameLabel = UILabel()
+    private let userButton = UIButton(type: .system)
+    private let storeButton = UIButton(type: .system)
     private let scrollView = UIScrollView()
     private let choiseNumbersView = ChoiseNumbersView()
     private let validateManager = ValidateManager()
-    let authService = AuthorizationService.shared
-    var cancellable = Set<AnyCancellable>()
-    var user: UserProfile?
-    let userDefaults = UserDefaults.standard
-    var countRequest = 0
+    private let authService = AuthorizationService.shared
+    private let userDefaults = UserDefaults.standard
+    private var cancellable = Set<AnyCancellable>()
+    private var user: UserProfile?
+    private var countRequest = 0
     
     
-//MARK: - Life Cycle:
-
+    //MARK: - Life Cycle:
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setViews()
@@ -38,18 +36,11 @@ class ChoiseNumbersViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        user = authService.userProfile
-        self.userButton.setTitle(self.user?.firstLetter, for: .normal)
-        sendCountRequestToServer()
+        self.userButton.setTitle(self.user?.firstLetter ?? "?", for: .normal)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-    }
-    
-//MARK: - @objc Functions:
-    @objc func profileDetails() {
+    //MARK: - @objc Functions:
+    @objc private func profileDetails() {
         let profileVC = ProfileViewController()
         
         if let sheet = profileVC.sheetPresentationController {
@@ -61,14 +52,14 @@ class ChoiseNumbersViewController: UIViewController {
         navigationController?.present(profileVC, animated: true)
     }
     
-    @objc func openStoreVc() {
+    @objc private func openStoreVc() {
         let storeVC = StoreViewController()
         storeVC.isUserAdmin = user?.isUserAdmin ?? false
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationController?.pushViewController(storeVC, animated: true)
     }
     
-    @objc func showDescriptionNumber() {
+    @objc private func showDescriptionNumber() {
         let typeRequest = choiseNumbersView.typeRequest
         guard let text = choiseNumbersView.inputTextField.text, !text.isEmpty else {return}
         if validateInputText(typeRequest: typeRequest, text: text) {
@@ -76,6 +67,7 @@ class ChoiseNumbersViewController: UIViewController {
             descriptionVC.numberRequest = text
             descriptionVC.typeRequest = typeRequest
             addCountRequest()
+            sendCountRequestToServer()
             navigationController?.pushViewController(descriptionVC, animated: true)
         } else {
             var title = ""
@@ -90,10 +82,10 @@ class ChoiseNumbersViewController: UIViewController {
             presentAlert(with: title, message: message, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
     }
-        
-//MARK: - Functions:
     
-    func setViews() {
+    //MARK: - Functions:
+    
+    private func setViews() {
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.isHidden = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -103,7 +95,7 @@ class ChoiseNumbersViewController: UIViewController {
         countRequest = user?.countRequest ?? 0
     }
     
-    func setupNavButton() {
+    private func setupNavButton() {
         userButton.frame = .init(x: 0, y: 0, width: 40, height: 40)
         userButton.titleLabel?.sizeToFit()
         userButton.titleLabel?.font = .boldSystemFont(ofSize: 20)
@@ -124,7 +116,7 @@ class ChoiseNumbersViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: storeButton)
     }
     
-    func sinkForUpdateUsers() {
+    private func sinkForUpdateUsers() {
         authService.$userProfile
             .receive(on: DispatchQueue.main)
             .filter{ $0 != nil }
@@ -132,6 +124,13 @@ class ChoiseNumbersViewController: UIViewController {
                 self.user = profile
                 self.userButton.setTitle(self.user?.firstLetter, for: .normal)
             }.store(in: &cancellable)
+        
+        authService.$error
+            .filter{$0 != nil}
+            .sink { error in
+                self.presentAlert(with: "Error", message: error?.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+            .store(in: &cancellable)
     }
     
     private func addTarget() {
@@ -149,7 +148,7 @@ class ChoiseNumbersViewController: UIViewController {
         }
     }
     
-    func addCountRequest() {
+    private func addCountRequest() {
         guard let user else {return}
         let countRequestInMemory = userDefaults.integer(forKey: user.uid)
         if countRequest < countRequestInMemory {
@@ -159,7 +158,7 @@ class ChoiseNumbersViewController: UIViewController {
         userDefaults.set(countRequest, forKey: user.uid)
     }
     
-    func sendCountRequestToServer() {
+    private func sendCountRequestToServer() {
         guard var user else {return}
         let countRequestInMemory = userDefaults.integer(forKey: user.uid)
         if user.countRequest < countRequestInMemory {
@@ -174,22 +173,22 @@ class ChoiseNumbersViewController: UIViewController {
         }
     }
     
-//MARK: - Set Constraints:
-        
-        private func setConstraints() {
-            NSLayoutConstraint.activate([
-                scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-                scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-                scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                
-                choiseNumbersView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-                choiseNumbersView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-                choiseNumbersView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-                choiseNumbersView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-                
-                choiseNumbersView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
-                choiseNumbersView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-            ])
-        }
+    //MARK: - Set Constraints:
+    
+    private func setConstraints() {
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            choiseNumbersView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            choiseNumbersView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            choiseNumbersView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            choiseNumbersView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            
+            choiseNumbersView.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+            choiseNumbersView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+    }
 }

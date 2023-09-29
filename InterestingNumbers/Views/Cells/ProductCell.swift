@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SDWebImage
 
-class ProductCell: UICollectionViewCell {
+final class ProductCell: UICollectionViewCell {
     
     static var identCell = "ProductCell"
     
@@ -19,11 +19,10 @@ class ProductCell: UICollectionViewCell {
         }
     }
     
-    let imageView = UIImageView()
-    var stackLabel = UIStackView()
-    let costLabel = UILabel()
-    let nameProductLabel = UILabel()
-    
+    private let imageView = UIImageView()
+    private var stackLabel = UIStackView()
+    private let costLabel = UILabel()
+    private let nameProductLabel = UILabel()
     
     override init(frame: CGRect) {
         super .init(frame: frame)
@@ -60,7 +59,6 @@ class ProductCell: UICollectionViewCell {
         nameProductLabel.numberOfLines = 2
         nameProductLabel.sizeToFit()
         nameProductLabel.adjustsFontSizeToFitWidth = true
-        
         stackLabel.distribution = .fillEqually
         addSubview(stackLabel)
     }
@@ -86,7 +84,6 @@ class ProductCell: UICollectionViewCell {
             guard let product = productModel else {return}
             self.nameProductLabel.text = product.nameProduct
             self.costLabel.text = product.cost + " €"
-        
        
         StorageService.shared.downloadImage(refference: .product, id: product.id) { result in
             switch result {

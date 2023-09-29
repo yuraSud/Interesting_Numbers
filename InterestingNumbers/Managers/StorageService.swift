@@ -9,7 +9,7 @@ import Foundation
 import FirebaseStorage
 import UIKit
 
-class StorageService {
+final class StorageService {
     static let shared = StorageService()
     private init() {}
     

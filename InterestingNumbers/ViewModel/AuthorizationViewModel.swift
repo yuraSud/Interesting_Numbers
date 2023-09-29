@@ -8,16 +8,15 @@
 import Foundation
 import Combine
 
-class AuthorizationViewModel {
+final class AuthorizationViewModel {
     
-    let authManager: AuthorizationService
+    private let authManager: AuthorizationService
+    private var cancellable = Set<AnyCancellable>()
     
     @Published var name: String = ""
     @Published var password: String = ""
     @Published var email: String = ""
     @Published var isBusyEmail: Bool = false
-    
-    var cancellable = Set<AnyCancellable>()
     
     var logInIsEnable: AnyPublisher<Bool,Never> {
         return Publishers.CombineLatest($email,$password)
@@ -37,7 +36,6 @@ class AuthorizationViewModel {
             }
             .eraseToAnyPublisher()
     }
-    
     
     init(authService: AuthorizationService) {
         self.authManager = authService

@@ -8,11 +8,10 @@
 import UIKit
 import Combine
 
-class RequestNumberViewModel {
+final class ChoiseRequestNumberViewModel {
     
     @Published var oneNumberDescription = ChooseNumbers()
     @Published var rangeNumbersDescription: [String:String] = [:]
-    
     
     private let networkManager = NetworkManager()
     private var cancellable: Set<AnyCancellable> = []

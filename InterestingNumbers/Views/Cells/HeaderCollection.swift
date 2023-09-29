@@ -9,18 +9,18 @@ import Foundation
 import UIKit
 import SDWebImage
 
-class HeaderCollection: UICollectionViewCell {
+final class HeaderCollection: UICollectionViewCell {
     
     static let headerIdentifier = "HeaderCollection"
+    private var stackView = UIStackView()
+    private let headerLabel = UILabel()
+    private let headerImageView = UIImageView()
+    
     var headerData: HeaderSectionModel? {
         didSet {
             setImageAndTitleForHeader()
         }
     }
-    
-    private var stackView = UIStackView()
-    private let headerLabel = UILabel()
-    private let headerImageView = UIImageView()
     
     override init(frame: CGRect) {
         super .init(frame: frame)
@@ -38,7 +38,7 @@ class HeaderCollection: UICollectionViewCell {
         headerImageView.image = nil
     }
     
-    func setImageAndTitleForHeader() {
+    private func setImageAndTitleForHeader() {
         headerLabel.text = headerData?.title
         headerLabel.font = .boldSystemFont(ofSize: 20)
         guard let headerData else {return}

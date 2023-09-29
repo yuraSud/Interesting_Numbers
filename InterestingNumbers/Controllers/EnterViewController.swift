@@ -2,39 +2,29 @@
 //  EnterViewController.swift
 //  InterestingNumbers
 //
-//  Created by Olga Sabadina on 10.09.2023.
+//  Created by Yura Sabadin on 10.09.2023.
 //
 
 import UIKit
-import GoogleSignIn
-import AuthenticationServices
-import FirebaseAuth
-import CryptoKit
-import Foundation
-import Firebase
-import FirebaseFirestore
-
 
 class EnterViewController: UIViewController {
     
-    let appLabel = UILabel()
-    let cubeImageView = UIImageView()
-    var logInButton = UIButton(type: .system)
-    let tryGuestButton = UIButton(type: .system)
-    var authButtonsStack = UIStackView()
-    var signUpStack = UIStackView()
-    let googleButton = UIButton()
-    let appleButton = UIButton()
-    var authorizedService = AuthorizationService.shared
-   
-    var currentNonce: String? //Apple authorization
+    private let appLabel = UILabel()
+    private let cubeImageView = UIImageView()
+    private let tryGuestButton = UIButton(type: .system)
+    private let googleButton = UIButton()
+    private let appleButton = UIButton()
+    private let logInButton = UIButton(type: .system)
+    private var signUpStack = UIStackView()
+    private var authButtonsStack = UIStackView()
+    private var authorizedService = AuthorizationService.shared
     
 // MARK: - life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setView()
-        setCubeImageView()
+        setDiceImageView()
         setAuthButtons()
         setLabels()
         setAuthButtonsStack()
@@ -43,41 +33,28 @@ class EnterViewController: UIViewController {
         setConstraints()
     }
 
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
 //MARK: - private func
     
-    @objc func goToAuthorised(_ sender: UIButton) {
+    @objc private func goToAuthorised(_ sender: UIButton) {
         let authorizedVC = AuthorisedViewController()
         
-        if sender == logInButton {
-            authorizedVC.isHaveAccount = true
-        } else {
-            authorizedVC.isHaveAccount = false
-        }
+        authorizedVC.isHaveAccount = sender == logInButton ? true : false
         navigationController?.navigationBar.isHidden = true
         navigationController?.pushViewController(authorizedVC, animated: true)
     }
     
-    @objc func goToAnonymous() {
+    @objc private func goToAnonymous() {
         authorizedService.loginAnonymously { err in
             guard let err = err else {return}
             self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
     }
     
-    @objc func signUpWithGoogle() {
+    @objc private func signUpWithGoogle() {
         authorizedService.authenticationWithGoogle(vc: self)
     }
     
-    @objc func signUpWithApple() {
+    @objc private func signUpWithApple() {
         authorizedService.startSignInWithAppleFlow(vc: self) { result in
             switch result {
             case .success(let tokenResult):
@@ -85,8 +62,8 @@ class EnterViewController: UIViewController {
                     do {
                         try await self.authorizedService.signInWithApple(token: tokenResult)
                         
-                    } catch let err {
-                        self.presentAlert(with: "Error", message: err.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                    } catch let error {
+                        self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
                     }
                 }
             case .failure(let error):
@@ -99,14 +76,14 @@ class EnterViewController: UIViewController {
     
     private func setView() {
         let backgroundView = UIImageView()
-        view.backgroundColor = .systemBackground
-        view.addSubview(backgroundView)
         backgroundView.frame = view.bounds
         backgroundView.contentMode = .scaleAspectFill
         backgroundView.image = ImageConstants.background
+        view.backgroundColor = .systemBackground
+        view.addSubview(backgroundView)
     }
     
-    private func setCubeImageView() {
+    private func setDiceImageView() {
         cubeImageView.image = ImageConstants.bigDice
         cubeImageView.contentMode = .scaleAspectFit
         cubeImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -181,8 +158,6 @@ class EnterViewController: UIViewController {
         signUpStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(signUpStack)
     }
-    
-    
     
  //MARK: - Constraints
     

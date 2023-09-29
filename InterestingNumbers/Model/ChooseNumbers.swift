@@ -7,8 +7,6 @@
 
 import Foundation
 
-typealias RangeNumbers = [String: String]
-
 struct ChooseNumbers: Codable {
     
     var text: String? = nil

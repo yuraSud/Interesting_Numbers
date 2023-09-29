@@ -9,10 +9,10 @@ import UIKit
 
 class StoreViewController: UIViewController {
 
-    let storeViewModel = StoreCollectionViewModel()
-    var collectionView : UICollectionView?
-    var subscribers = Set<AnyCancellable>()
     var isUserAdmin = false
+    private let storeViewModel = StoreCollectionViewModel()
+    private var collectionView : UICollectionView?
+    private var subscribers = Set<AnyCancellable>()
     
 //MARK: - Life Cycle:
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class StoreViewController: UIViewController {
     
 //MARK: - @objc Function:
     
-    @objc func addItem() {
+    @objc private func addItem() {
         let addItemVC = AddProductsViewController()
         
         addItemVC.reloadSubject.sink { isReload in
@@ -54,11 +54,11 @@ class StoreViewController: UIViewController {
         navigationController?.present(addItemVC, animated: true)
     }
     
-    @objc func downloadHtml() {
+    @objc private func downloadHtml() {
         storeViewModel.getAllHtml()
     }
     
-    @objc func openHtml() {
+    @objc private func openHtml() {
         let webView = WebViewController()
         webView.url = storeViewModel.url
         navigationController?.pushViewController(webView, animated: true)
@@ -69,7 +69,7 @@ class StoreViewController: UIViewController {
         let addProduct = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
         let downloadHtml = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(downloadHtml))
         let openHtml = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(openHtml))
-        let buttonSet = isUserAdmin ? [downloadHtml,addProduct,openHtml] : [downloadHtml,openHtml]
+        let buttonSet = isUserAdmin ? [addProduct/*, downloadHtml, openHtml*/] : [/*downloadHtml,openHtml*/]
         navigationItem.setRightBarButtonItems(buttonSet, animated: false)
     }
     
@@ -124,7 +124,7 @@ class StoreViewController: UIViewController {
 
 extension StoreViewController {
     
-    func setCollectionView() {
+    private func setCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView?.delegate = self
         collectionView?.dataSource = self
@@ -134,11 +134,10 @@ extension StoreViewController {
         //Register Cells and Headers
         collectionView?.register(ProductCell.self, forCellWithReuseIdentifier: ProductCell.identCell)
         collectionView?.register(HeaderCollection.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HeaderCollection.headerIdentifier)
-        
         view.addSubview(collectionView ?? UICollectionView())
     }
     
-    func columnCount(for width: CGFloat) -> Int {
+    private func columnCount(for width: CGFloat) -> Int {
         let wideMode = width > 800
             return wideMode ? 6 : 3
     }

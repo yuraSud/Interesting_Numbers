@@ -11,17 +11,17 @@ class ChoiseNumbersView: UIView {
     let showButton = UIButton(type: .system)
     let inputTextField = UITextField()
     var typeRequest: TypeRequest = .oneNumber
+    private let validateManager = ValidateManager()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let enterLabel = UILabel()
-    private var bezierDiceOne = BezierDiceFive()
-    private var bezierDiceFive = BezierDiceFive()
-    private let validateManager = ValidateManager()
-    private var buttonTag = 0
+    private var bezierDiceOne = DiceView()
+    private var bezierDiceTwo = DiceView()
     private var buttonsStack = UIStackView()
     private var titlesStack = UIStackView()
     private var inputStack = UIStackView()
     private var buttonsArray: [UIButton] = []
+    private var buttonTag = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,7 +50,6 @@ class ChoiseNumbersView: UIView {
     @objc private func keyboardWillShow(_ notification: Notification) {
         let userInfo = notification.userInfo
         let keyboardFrame = (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
-        
         let keyboardHeight = keyboardFrame.height - 50
         frame.origin = CGPoint(x: frame.origin.x, y: -keyboardHeight)
     }
@@ -76,11 +75,10 @@ class ChoiseNumbersView: UIView {
 //MARK: - private func:
     
     private func setBezierPathView() {
-        bezierDiceOne = BezierDiceFive(frame: CGRect(x: 170, y: 230, width: 120, height: 120))
+        bezierDiceOne = DiceView(frame: CGRect(x: 170, y: 230, width: 120, height: 120))
+        bezierDiceTwo = DiceView(frame: CGRect(x: 50, y: 230, width: 120, height: 120))
         addSubview(bezierDiceOne)
-        bezierDiceFive = BezierDiceFive(frame: CGRect(x: 50, y: 230, width: 120, height: 120))
-        bezierDiceFive.rotate()
-        addSubview(bezierDiceFive)
+        addSubview(bezierDiceTwo)
     }
     
     private func setTitlesLabel() {
@@ -121,7 +119,7 @@ class ChoiseNumbersView: UIView {
         button.layer.shadowOpacity = 0
         setPlacholder(button)
         bezierDiceOne.setNeedsDisplay()
-        bezierDiceFive.setNeedsDisplay()
+        bezierDiceTwo.setNeedsDisplay()
     }
     
     private func setPlacholder (_ button: UIButton) {

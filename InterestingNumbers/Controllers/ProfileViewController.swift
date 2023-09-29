@@ -10,19 +10,19 @@ import Combine
 
 class ProfileViewController: UIViewController {
     
-    let usersImageLabel = UILabel()
-    let nameUserLabel = UILabel()
-    let emailUserLabel = UILabel()
-    let countRequestLabel = UILabel()
-    let editProfileButton = UIButton(type: .system)
-    let deletProfileButton = UIButton(type: .system)
-    let logOutProfileButton = UIButton(type: .system)
-    let cancelButton = UIButton(type: .system)
-    var stackButtons = UIStackView()
-    var labelStack = UIStackView()
-    let authService = AuthorizationService.shared
-    var user: UserProfile?
-    var subscribers = Set<AnyCancellable>()
+    private let usersImageLabel = UILabel()
+    private let nameUserLabel = UILabel()
+    private let emailUserLabel = UILabel()
+    private let countRequestLabel = UILabel()
+    private let editProfileButton = UIButton(type: .system)
+    private let deletProfileButton = UIButton(type: .system)
+    private let logOutProfileButton = UIButton(type: .system)
+    private let cancelButton = UIButton(type: .system)
+    private let authService = AuthorizationService.shared
+    private var stackButtons = UIStackView()
+    private var labelStack = UIStackView()
+    private var subscribers = Set<AnyCancellable>()
+    private var user: UserProfile?
     
 //MARK: - Life cycle:
     
@@ -38,13 +38,9 @@ class ProfileViewController: UIViewController {
         updateUser()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
 //MARK: - Fuctions:
     
-    func updateUser() {
+    private func updateUser() {
         authService.$userProfile
             .receive(on: DispatchQueue.main)
             .filter{ $0 != nil }
@@ -52,20 +48,28 @@ class ProfileViewController: UIViewController {
                 self.user = profile
                 self.setLabelsText()
             }.store(in: &subscribers)
+        
+        authService.$error
+            .filter{$0 != nil}
+            .sink { error in
+                self.presentAlert(with: "Error", message: error?.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+            .store(in: &subscribers)
     }
     
-    func fetchCurrentUser() {
-        authService.getProfileDocuments()
-        user = authService.userProfile
-        guard let _ = user else {
+    private func fetchCurrentUser() {
+        guard !authService.userIsAnonymously() else {
             self.user = UserProfile(name: "?", email: "Anonymous@mail.com")
             setLabelsText()
-            return
-        }
+            self.editProfileButton.isHidden = true
+            return}
+        
+        authService.getProfileDocuments()
+        self.editProfileButton.isHidden = false
         setLabelsText()
     }
     
-    func setLabelsText() {
+    private func setLabelsText() {
         guard let user else {return}
         nameUserLabel.text = "name: \(user.name)"
         emailUserLabel.text = "email: \(user.email)"
@@ -90,13 +94,11 @@ class ProfileViewController: UIViewController {
         }
         self.authService.deleteUser(vc: self) { error in
             guard let error else {return}
-            
             self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
         }
-        
     }
     
-    @objc func editUserProfile() {
+    @objc private func editUserProfile() {
         editProfileAlert()
     }
     
@@ -162,7 +164,6 @@ class ProfileViewController: UIViewController {
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            
             labelStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             labelStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             labelStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
@@ -217,7 +218,7 @@ class ProfileViewController: UIViewController {
             nameTF.autocapitalizationType = .none
         }
         alert.addTextField { emailTF in
-            emailTF.placeholder = "name"
+            emailTF.placeholder = "email"
             emailTF.text = self.user?.email
             emailTF.clearButtonMode = .whileEditing
             emailTF.autocorrectionType = .no

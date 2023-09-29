@@ -12,9 +12,10 @@ class DescriptionNumberViewController: UIViewController {
     
     var numberRequest = ""
     var typeRequest: TypeRequest = .oneNumber
+    
     private let closeButton = UIButton(type: .system)
-    private let discriptionView = UITextView()
-    private let numbersViewModel = RequestNumberViewModel()
+    private let descriptionView = UITextView()
+    private let numbersViewModel = ChoiseRequestNumberViewModel()
     private var cancellable = Set<AnyCancellable>()
     
 //MARK: - life cycle:
@@ -31,7 +32,7 @@ class DescriptionNumberViewController: UIViewController {
     
 //MARK: - @objc Functions:
     
-    @objc func closeDiscriptionVC() {
+    @objc private func closeDiscriptionVC() {
         navigationController?.popViewController(animated: true)
     }
     
@@ -43,11 +44,11 @@ class DescriptionNumberViewController: UIViewController {
     }
     
     private func setDiscriptionView() {
-        discriptionView.font = UIFont(name: FontsEnum.regular, size: 16)
-        discriptionView.textColor = .white
-        discriptionView.backgroundColor = .clear
-        discriptionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(discriptionView)
+        descriptionView.font = UIFont(name: FontsEnum.regular, size: 16)
+        descriptionView.textColor = .white
+        descriptionView.backgroundColor = .clear
+        descriptionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(descriptionView)
     }
     
     private func setupNavButton() {
@@ -96,7 +97,7 @@ class DescriptionNumberViewController: UIViewController {
         paragraph.alignment = .center
         let attributedText = NSMutableAttributedString(string: paragraphString, attributes: [.font: UIFont.boldSystemFont(ofSize: 26), .paragraphStyle: paragraph, .foregroundColor: UIColor.yellow])
         attributedText.append(NSAttributedString(string: textBody, attributes: [.font: UIFont.systemFont(ofSize: 19), .foregroundColor: UIColor.white]))
-        discriptionView.attributedText = attributedText
+        descriptionView.attributedText = attributedText
     }
     
     private func appendTextsToTextView(textBody: RangeNumbers) {
@@ -115,17 +116,17 @@ class DescriptionNumberViewController: UIViewController {
             attributedText.append(NSAttributedString(string: enter))
             attributedText.append(NSAttributedString(string: enter))
         }
-        discriptionView.attributedText = attributedText
+        descriptionView.attributedText = attributedText
     }
     
 //MARK: - Constraints:
     
     private func setConstraints() {
         NSLayoutConstraint.activate([
-            discriptionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            discriptionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            discriptionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            discriptionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+            descriptionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            descriptionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            descriptionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            descriptionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
 }

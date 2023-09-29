@@ -7,23 +7,23 @@
 
 import UIKit
 
-class AuthorisedView: UIView {
+final class AuthorisedView: UIView {
     
-    let titleLabel = UILabel()
-    let signInLabel = UILabel()
-    let descriptionLabel = UILabel()
+    private let titleLabel = UILabel()
+    private let signInLabel = UILabel()
+    private let descriptionLabel = UILabel()
+    private let cubesView = UIImageView()
+    private var titlesStack = UIStackView()
+    private var authorizedStack = UIStackView()
+    private var signInStack = UIStackView()
     let nameTextField = UITextFieldPadding()
     let emailTextField = UITextFieldPadding()
     let passwordTextField = UITextFieldPadding()
-    let cubesView = UIImageView()
-    var titlesStack = UIStackView()
-    var authorizedStack = UIStackView()
-    var signInStack = UIStackView()
     var animating = UIActivityIndicatorView()
+    let buttonEye = UIButton()
     let signInButton = UIButton(type: .system)
     let forgetButton = UIButton(type: .system)
     let loginButton = UIButton(type: .system)
-    let buttonEye = UIButton()
     var isHaveAccount: Bool = false {
         didSet {
             setLoginButton()
@@ -52,7 +52,6 @@ class AuthorisedView: UIView {
     deinit {
         removeKeyboardObserver()
         animating.stopAnimating()
-        print("deinit removeKeyboardObserver")
     }
     
     //MARK: - Func:
@@ -113,10 +112,6 @@ class AuthorisedView: UIView {
         forgetButton.translatesAutoresizingMaskIntoConstraints = false
         forgetButton.setTitle(TitleConstants.forgotButton, for: .normal)
         forgetButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
-        NSLayoutConstraint.activate([
-            forgetButton.trailingAnchor.constraint(equalTo: authorizedStack.trailingAnchor),
-            forgetButton.topAnchor.constraint(equalTo: authorizedStack.bottomAnchor, constant: 10)
-        ])
     }
     
     private func setCubesView() {
@@ -234,6 +229,9 @@ class AuthorisedView: UIView {
             
             animating.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor, constant: -20),
             animating.centerYAnchor.constraint(equalTo: loginButton.centerYAnchor),
+            
+            forgetButton.trailingAnchor.constraint(equalTo: authorizedStack.trailingAnchor),
+            forgetButton.topAnchor.constraint(equalTo: authorizedStack.bottomAnchor, constant: 10)
         ])
     }
 }

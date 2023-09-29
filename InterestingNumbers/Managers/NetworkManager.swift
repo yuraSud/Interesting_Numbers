@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class NetworkManager {
+final class NetworkManager {
     
     private let baseUrl = "http://numbersapi.com/"
     private let endForJson = "?json"

@@ -10,18 +10,18 @@ import Combine
 
 class AddProductsViewController: UIViewController {
     
-    let addViewModel = AddProductViewModel()
-    let cancelButton = UIButton(type: .system)
-    let titleLabel = UILabel()
-    let addImageView = UIImageView()
-    let nameTextFielf = UITextFieldRightView()
-    let costTextField = UITextFieldRightView()
-    let categoryTextField = UITextFieldRightView()
-    let addButton = UIButton(type: .system)
-    var stackTF = UIStackView()
-   
     let reloadSubject = PassthroughSubject<Bool,Never>()
-    var subscribers = Set<AnyCancellable>()
+    
+    private let addViewModel = AddProductViewModel()
+    private let cancelButton = UIButton(type: .system)
+    private let titleLabel = UILabel()
+    private let addImageView = UIImageView()
+    private let nameTextFielf = UITextFieldRightView()
+    private let costTextField = UITextFieldRightView()
+    private let categoryTextField = UITextFieldRightView()
+    private let addButton = UIButton(type: .system)
+    private var stackTF = UIStackView()
+    private var subscribers = Set<AnyCancellable>()
     
     //MARK: - Life cycle:
     
@@ -35,21 +35,13 @@ class AddProductsViewController: UIViewController {
         sinkOnPublishers()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    //MARK: - Fuctions:
-    
-   
-    
     //MARK: - @objc Functions:
     
     @objc private func closeVC() {
         self.dismiss(animated: true)
     }
     
-    @objc func addProductsToStorage() {
+    @objc private func addProductsToStorage() {
         addViewModel.addToServer() { isUpload in
             if isUpload {
                 self.reloadSubject.send(true)
@@ -58,7 +50,7 @@ class AddProductsViewController: UIViewController {
         closeVC()
     }
     
-    @objc func alertWhenTapOnImage() {
+    @objc private func alertWhenTapOnImage() {
         let alert = UIAlertController(title: "choose Image Menu", message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in self.openCamera() }))
         alert.addAction(UIAlertAction(title: "Gallary", style: .default, handler: { _ in
@@ -86,13 +78,13 @@ class AddProductsViewController: UIViewController {
         cancelButton.setBorderLayer(backgroundColor: .black, borderColor: .gray, borderWidth: 2, cornerRadius: 15, tintColor: .white)
     }
     
-    func configureUI() {
+    private func configureUI() {
         configTitle()
         configImageView()
         configureStackTF()
     }
     
-    func configTitle() {
+    private func configTitle() {
         view.addSubview(titleLabel)
         titleLabel.text = TitleConstants.titleAddVC
         titleLabel.frame = .init(x: 16, y: 25, width: view.frame.width-32, height: 40)
@@ -101,7 +93,7 @@ class AddProductsViewController: UIViewController {
         titleLabel.font = .boldSystemFont(ofSize: 19)
     }
     
-    func configImageView() {
+    private func configImageView() {
         view.addSubview(addImageView)
         addImageView.image = ImageConstants.addImage
         addImageView.frame = .init(x: 50, y: 69, width: view.frame.width-100, height: 150)
@@ -111,7 +103,7 @@ class AddProductsViewController: UIViewController {
         addImageView.addGestureRecognizer(tapGesture)
     }
     
-    func configureStackTF() {
+    private func configureStackTF() {
         let tfArray = [nameTextFielf,costTextField, categoryTextField]
         stackTF = UIStackView(arrangedSubviews: tfArray)
         stackTF.translatesAutoresizingMaskIntoConstraints = false
@@ -139,7 +131,7 @@ class AddProductsViewController: UIViewController {
         addButton.titleLabel?.font = .boldSystemFont(ofSize: 18)
     }
     
-    func sinkOnPublishers() {
+    private func sinkOnPublishers() {
         addViewModel.addIsEnable
             .sink { isEnable in
                 self.addButton.isEnabled = isEnable

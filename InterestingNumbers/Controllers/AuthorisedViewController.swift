@@ -5,22 +5,17 @@
 //  Created by Yura Sabadin on 09.09.2023.
 //
 
-//import FirebaseFirestoreSwift
 import UIKit
-//import Firebase
-//import FirebaseCore
-//import FirebaseFirestore
-//import FirebaseAuth
 import Combine
 
 class AuthorisedViewController: UIViewController {
     
-    let authoriseView = AuthorisedView()
-    let scrollView = UIScrollView()
-    let authService = AuthorizationService.shared
     var isHaveAccount = false
-    var viewModelAuthorized: AuthorizationViewModel?
-    var cancellable = Set<AnyCancellable>()
+    private var viewModelAuthorized: AuthorizationViewModel?
+    private var cancellable = Set<AnyCancellable>()
+    private let authoriseView = AuthorisedView()
+    private let authService = AuthorizationService.shared
+    private let scrollView = UIScrollView()
 
 //MARK: - Life cycle:
     
@@ -34,13 +29,9 @@ class AuthorisedViewController: UIViewController {
         setTextFieldPublishers()
    }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-    }
-    
 //MARK: - @objc Functions:
     
-    @objc func goToSignIn() {
+    @objc private func goToSignIn() {
         if isHaveAccount {
             isHaveAccount = false
             haveAccount(false)
@@ -53,8 +44,7 @@ class AuthorisedViewController: UIViewController {
         }
     }
     
-    @objc func forgotPassword() {
-        print(navigationController?.viewControllers.count ?? 100, "Count nav") //Delete this row!!!
+    @objc private func forgotPassword() {
         let alert = UIAlertController(title: "Do you want to reset password?", message: "use your email...", preferredStyle: .alert)
         
         let alertActionOk = UIAlertAction(title: "OK", style: .default) { _ in
@@ -73,7 +63,7 @@ class AuthorisedViewController: UIViewController {
         present(alert, animated: true)
     }
     
-    @objc func pushLogInButton(_ sender: UIButton) {
+    @objc private func pushLogInButton(_ sender: UIButton) {
 
         guard let email = authoriseView.emailTextField.text,
               let password = authoriseView.passwordTextField.text
@@ -86,7 +76,6 @@ class AuthorisedViewController: UIViewController {
                 self?.authoriseView.animating.stopAnimating()
                 self?.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
             }
-            
         } else {
             authoriseView.animating.startAnimating()
             self.authService.signUp(email, password, profile: user) { [weak self] error in
@@ -161,6 +150,13 @@ class AuthorisedViewController: UIViewController {
             .sink { _ in
                 self.authoriseView.emailTextField.animating?.startAnimating()
             }.store(in: &cancellable)
+        
+        authService.$error
+            .filter{$0 != nil}
+            .sink { error in
+                self.presentAlert(with: "Error", message: error?.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+            }
+            .store(in: &cancellable)
     }
     
     private func setTextFieldPublishers() {

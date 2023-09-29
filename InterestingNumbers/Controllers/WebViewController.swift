@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  htmlParceTraining
 //
-//  Created by Olga Sabadina on 09.08.2023.
+//  Created by Yura Sabadin on 09.08.2023.
 //
 
 import UIKit
@@ -10,10 +10,9 @@ import WebKit
 
 class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
     
-    //var chapter: Chapter?
     var url: URL?
+    
     private let webView = WKWebView()
-    //private let coreDataManager = CoreDataManager.instance
     private let addToFavoritesButton = UIButton(type: .system)
     private var htmlStrings = ""
     private var isFavoritesMode = Mode.addToFavorite
@@ -71,7 +70,6 @@ class WebViewController: UIViewController, WKUIDelegate, WKNavigationDelegate {
     
     private func getHTMLString() -> String {
         var htmlString = ""
-        //let htmlPathURL = Bundle.main.url(forResource: "chapter?.fileName", withExtension: "html")
         if let htmlPathURL = url {
             do {
                 htmlString = try String(contentsOf: htmlPathURL, encoding: .utf8)

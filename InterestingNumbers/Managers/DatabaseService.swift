@@ -11,7 +11,7 @@ import FirebaseFirestoreSwift
 import FirebaseCore
 import Firebase
 
-class DatabaseService {
+final class DatabaseService {
     
     static let shared = DatabaseService()
     private init() {}

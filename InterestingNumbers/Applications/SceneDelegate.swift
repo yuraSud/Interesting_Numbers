@@ -8,8 +8,6 @@
 import UIKit
 import FirebaseCore
 import Combine
-//import FirebaseFirestore
-//import GoogleSignIn
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -35,7 +33,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .sink(receiveValue: { state in
                 switch state {
                 case .loggedIn :
-                    self.navigationVC.setViewControllers([ChoiseNumbersViewController()], animated: true)
+                    self.navigationVC.setViewControllers([ChoiseRequestNumbersViewController()], animated: true)
                 case .loggedOut :
                     self.navigationVC.setViewControllers([EnterViewController()], animated: true)
                 }
