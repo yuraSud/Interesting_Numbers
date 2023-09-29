@@ -32,10 +32,14 @@ Added the ability to log in anonymously, or using Google or Apple authentication
 <img src="./ScreensShot/1.png" alt="drawing" width="200"/> <img src="./ScreensShot/2.png" alt="drawing" width="200"/><img src="./ScreensShot/4.png" alt="drawing" width="200"/><img src="./ScreensShot/21.png" alt="drawing" width="200"/>
 
 ## Screenshots:
+___
+User Login Screens:
 
 <img src="./ScreensShot/3.png" alt="drawing" width="230"/> <img src="./ScreensShot/5.png" alt="drawing" width="230"/> <img src="./ScreensShot/6.png" alt="drawing" width="230"/>
 
 <img src="./ScreensShot/7.png" alt="drawing" width="230"/><img src="./ScreensShot/8.png" alt="drawing" width="230"/><img src="./ScreensShot/11.png" alt="drawing" width="230"/>
+
+Interesting facts about numbers:
 
 <img src="./ScreensShot/9.png" alt="drawing" width="230"/><img src="./ScreensShot/10.png" alt="drawing" width="230"/><img src="./ScreensShot/111.png" alt="drawing" width="230"/>
 
@@ -45,6 +49,9 @@ As an addition, a type of store has been introduced with the ability to add card
 
 <img src="./ScreensShot/24.png" alt="drawing" width="230"/><img src="./ScreensShot/25.png" alt="drawing" width="230"/><img src="./ScreensShot/26.png" alt="drawing" width="230"/>
 
+Adding or editing products using the web interface:
+
+<img src="./ScreensShot/31.png" alt="drawing" width="400"/>
 
 ## Contributing
 If you find a bug or remark in the code or when the program is running, please email me:
