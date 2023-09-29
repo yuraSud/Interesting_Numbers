@@ -51,7 +51,7 @@ As an addition, a type of store has been introduced with the ability to add card
 
 Adding or editing products using the web interface:
 
-<img src="./ScreensShot/31.png" alt="drawing" width="400"/>
+<img src="./ScreensShot/32.png" alt="drawing" width="400"/>
 
 ## Contributing
 If you find a bug or remark in the code or when the program is running, please email me:
