@@ -19,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().isTranslucent = true
+        FirebaseApp.configure()
         return true
     }
 

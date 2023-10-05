@@ -1,0 +1,28 @@
+{
+  "configurations" : [
+    {
+      "id" : "440FD3D2-22CD-4A4C-800F-4F8D60FBFC7B",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Interesting_Numbers.xcodeproj",
+      "identifier" : "20D3722F2AAC63450095041A",
+      "name" : "Interesting_Numbers"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Interesting_Numbers.xcodeproj",
+        "identifier" : "9C07962F2AC9F7A5002E91F3",
+        "name" : "Interesting_NumbersTests"
+      }
+    }
+  ],
+  "version" : 1
+}
