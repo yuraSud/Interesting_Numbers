@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ChooseNumbers: Codable {
+struct NumberModel: Codable {
     
     var text: String? = nil
     var year: Int? = nil

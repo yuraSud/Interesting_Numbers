@@ -10,7 +10,7 @@ import Combine
 
 final class ChoiseRequestNumberViewModel {
     
-    @Published var oneNumberDescription = ChooseNumbers()
+    @Published var oneNumberDescription = NumberModel()
     @Published var rangeNumbersDescription: [String:String] = [:]
     
     private let networkManager = NetworkManager()
@@ -19,7 +19,7 @@ final class ChoiseRequestNumberViewModel {
     func fetchNumber(typeRequest: TypeRequest, _ inputedNumbers: String, completionError: @escaping (Error)->()) {
          let isMath = typeRequest == TypeRequest.random
             
-        networkManager.fetchNumber(inputedNumbers, type: ChooseNumbers.self, mathRequest: isMath)
+        networkManager.fetchNumber(inputedNumbers, type: NumberModel.self, mathRequest: isMath)
             .sink { completion in
                 switch completion {
                 case .failure(let error):

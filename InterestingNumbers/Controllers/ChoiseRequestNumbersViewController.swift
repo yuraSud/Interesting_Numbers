@@ -103,6 +103,7 @@ class ChoiseRequestNumbersViewController: UIViewController {
         userButton.titleLabel?.tintColor = .white
         userButton.layer.cornerRadius = userButton.bounds.size.width / 2
         userButton.backgroundColor = .systemMint
+        userButton.accessibilityIdentifier = "userButton"
         userButton.addTarget(self, action: #selector(profileDetails), for: .touchUpInside)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: userButton)
         

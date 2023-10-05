@@ -2,14 +2,14 @@
 //  ChoiseViewModelTests.swift
 //  InterestingNumbersTests
 //
-//  Created by Olga Sabadina on 01.10.2023.
+//  Created by Yura Sabadin on 01.10.2023.
 //
 
 import XCTest
 import Combine
 @testable import Interesting_Numbers
 
-final class ChoiseViewModelTests: XCTestCase {
+final class ChoiseRequestNumberViewModelTests: XCTestCase {
     
     var choiseRequestViewModel: ChoiseRequestNumberViewModel?
     var cancellable = Set<AnyCancellable>()
@@ -21,6 +21,7 @@ final class ChoiseViewModelTests: XCTestCase {
     
     override func tearDown() {
         choiseRequestViewModel = nil
+        cancellable.removeAll()
         super.tearDown()
     }
     
@@ -46,6 +47,29 @@ final class ChoiseViewModelTests: XCTestCase {
             .store(in: &cancellable)
         
         wait(for: [expectation], timeout: 15.0)
+    }
+    
+    func testFetchRangeNumbersViewModel() {
+        
+        let expectation = XCTestExpectation(description: "Fetch RangeNumberViewModel")
+
+        choiseRequestViewModel?.fetchRangeNumber("10..15", completionError: { error in
+            XCTFail("Expected successful fetch, but got error: \(error)")
+        })
+        
+        choiseRequestViewModel?.$rangeNumbersDescription
+            .filter{ !$0.isEmpty }
+            .sink(receiveValue: { value in
+                
+                XCTAssert( value.count > 2 )
+                XCTAssertFalse(value.isEmpty)
+                XCTAssertEqual(value.keys.count, 6)
+                
+                expectation.fulfill()
+            })
+            .store(in: &cancellable)
+        
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
