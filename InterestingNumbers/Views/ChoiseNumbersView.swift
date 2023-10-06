@@ -5,6 +5,7 @@
 //  Created by Yura Sabadin on 24.09.2023.
 //
 import UIKit
+import DescriptionNumber
 
 class ChoiseNumbersView: UIView {
     
@@ -75,8 +76,8 @@ class ChoiseNumbersView: UIView {
 //MARK: - private func:
     
     private func setBezierPathView() {
-        bezierDiceOne = DiceView(frame: CGRect(x: 170, y: 230, width: 120, height: 120))
-        bezierDiceTwo = DiceView(frame: CGRect(x: 50, y: 230, width: 120, height: 120))
+        bezierDiceOne = DiceView(frame: CGRect(x: 170, y: 200, width: 120, height: 120))
+        bezierDiceTwo = DiceView(frame: CGRect(x: 50, y: 200, width: 120, height: 120))
         addSubview(bezierDiceOne)
         addSubview(bezierDiceTwo)
     }

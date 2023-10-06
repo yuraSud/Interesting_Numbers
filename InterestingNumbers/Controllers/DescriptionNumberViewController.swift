@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import DescriptionNumber
 
 class DescriptionNumberViewController: UIViewController {
     
@@ -15,7 +16,7 @@ class DescriptionNumberViewController: UIViewController {
     
     private let closeButton = UIButton(type: .system)
     private let descriptionView = UITextView()
-    private let numbersViewModel = ChoiseRequestNumberViewModel()
+    private let numbersViewModels = DescriptionNumber()
     private var cancellable = Set<AnyCancellable>()
     
 //MARK: - life cycle:
@@ -25,7 +26,6 @@ class DescriptionNumberViewController: UIViewController {
         setView()
         setDiscriptionView()
         setupNavButton()
-        subscribeToNumberModel()
         getNumberFromRequest()
         setConstraints()
     }
@@ -66,28 +66,33 @@ class DescriptionNumberViewController: UIViewController {
         guard !numberRequest.isEmpty else {return}
         switch typeRequest {
         case .oneNumber, .year, .random:
-            numbersViewModel.fetchNumber(typeRequest: typeRequest, numberRequest) { error in
-                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
-            }
-        case .range:
-            numbersViewModel.fetchRangeNumber(numberRequest) { error in
-                self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
-            }
-        }
-    }
-    
-    private func subscribeToNumberModel() {
-        numbersViewModel.$oneNumberDescription
-            .sink(receiveValue: { value in
+            numbersViewModels.fetchNumber(typeRequest: typeRequest, numberRequest)
+                .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                }
+            } receiveValue: { value in
                 self.appendOneTextToTextView(numberRequest: self.numberRequest, textBody: value.text ?? "")
-            })
+            }
             .store(in: &cancellable)
-        
-        numbersViewModel.$rangeNumbersDescription
-            .sink(receiveValue: { dictionary in
-                self.appendTextsToTextView(textBody: dictionary)
-            })
+            
+        case .range:
+            numbersViewModels.fetchRangeNumber(numberRequest)
+                .sink { completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let error):
+                    self.presentAlert(with: "Error", message: error.localizedDescription, buttonTitles: "OK", styleActionArray: [.default], alertStyle: .alert, completion: nil)
+                }
+            } receiveValue: { value in
+                self.appendTextsToTextView(textBody: value)
+            }
             .store(in: &cancellable)
+        }
     }
     
     private func appendOneTextToTextView(numberRequest: String ,textBody: String) {
