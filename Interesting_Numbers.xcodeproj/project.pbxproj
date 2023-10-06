@@ -127,7 +127,7 @@
 		20D3724E2AAC7AAD0095041A /* TitleConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleConstants.swift; sourceTree = "<group>"; };
 		20D372502AAC83B30095041A /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		20D372532AADA9E00095041A /* EnterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterViewController.swift; sourceTree = "<group>"; };
-		9C0796302AC9F7A5002E91F3 /* Interesting_NumbersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Interesting_NumbersTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C0796302AC9F7A5002E91F3 /* Interesting_NumbersTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = Interesting_NumbersTests.xctest; path = "/Users/sud/myCodes/Interesting_Numbers/build/Debug-iphoneos/Interesting_NumbersTests.xctest"; sourceTree = "<absolute>"; };
 		9C0796322AC9F7A5002E91F3 /* AuthorizedViewModelTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizedViewModelTest.swift; sourceTree = "<group>"; };
 		9C07965B2AC9FD11002E91F3 /* Interesting_Numbers.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Interesting_Numbers.xctestplan; sourceTree = "<group>"; };
 		9C269F9D2ABD9C2600B363F1 /* FileManagerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerService.swift; sourceTree = "<group>"; };
@@ -169,7 +169,7 @@
 		9C7FB17A2AC042D600E38076 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9C7FB17C2AC4981E00E38076 /* DiceView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DiceView.swift; sourceTree = "<group>"; };
 		9C7FB17E2AC56F5800E38076 /* StoreErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreErrors.swift; sourceTree = "<group>"; };
-		9CDC39F72ACEFF19006B5DB3 /* Interesting_NumbersUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Interesting_NumbersUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CDC39F72ACEFF19006B5DB3 /* Interesting_NumbersUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = Interesting_NumbersUITests.xctest; path = "/Users/sud/myCodes/Interesting_Numbers/build/Debug-iphoneos/Interesting_NumbersUITests.xctest"; sourceTree = "<absolute>"; };
 		9CDC39F92ACEFF19006B5DB3 /* Interesting_NumbersUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interesting_NumbersUITests.swift; sourceTree = "<group>"; };
 		9CE132322AAE3C0100527002 /* ImageConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConstants.swift; sourceTree = "<group>"; };
 		9CE132342AAEF0F500527002 /* ChoiseRequestNumbersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoiseRequestNumbersViewController.swift; sourceTree = "<group>"; };
@@ -252,15 +252,11 @@
 		20D372272AAC63450095041A = {
 			isa = PBXGroup;
 			children = (
-				9C07965B2AC9FD11002E91F3 /* Interesting_Numbers.xctestplan */,
-				9C2C64222AB88543003F0B73 /* Interesting_Numbers.entitlements */,
 				20D372322AAC63450095041A /* InterestingNumbers */,
-				9C2C64142AB35FD2003F0B73 /* Interesting_Numbers.app */,
 				9C0796312AC9F7A5002E91F3 /* Interesting_NumbersTests */,
 				9CDC39F82ACEFF19006B5DB3 /* Interesting_NumbersUITests */,
-				9C2C64472ABB0622003F0B73 /* Frameworks */,
-				9C0796302AC9F7A5002E91F3 /* Interesting_NumbersTests.xctest */,
-				9CDC39F72ACEFF19006B5DB3 /* Interesting_NumbersUITests.xctest */,
+				9C2C64222AB88543003F0B73 /* Interesting_Numbers.entitlements */,
+				9C2C64142AB35FD2003F0B73 /* Interesting_Numbers.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -406,17 +402,11 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		9C2C64472ABB0622003F0B73 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		9CDC39F82ACEFF19006B5DB3 /* Interesting_NumbersUITests */ = {
 			isa = PBXGroup;
 			children = (
 				9CDC39F92ACEFF19006B5DB3 /* Interesting_NumbersUITests.swift */,
+				9C07965B2AC9FD11002E91F3 /* Interesting_Numbers.xctestplan */,
 			);
 			path = Interesting_NumbersUITests;
 			sourceTree = "<group>";

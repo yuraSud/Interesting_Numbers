@@ -29,7 +29,7 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:Interesting_Numbers.xctestplan"
+            reference = "container:Interesting_NumbersUITests/Interesting_Numbers.xctestplan"
             default = "YES">
          </TestPlanReference>
       </TestPlans>
